@@ -120,7 +120,6 @@ class _SettingsScopeState extends State<SettingsScope>
   @override
   AppTheme get theme =>
       widget.settingsBloc.state.appTheme ?? AppTheme.defaultTheme;
-
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<SettingsBloc, SettingsState>(
