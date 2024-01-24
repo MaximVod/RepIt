@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sizzle_starter/src/core/localization/localization.dart';
-import 'package:sizzle_starter/src/feature/settings/widget/settings_scope.dart';
+import 'package:repit/src/core/localization/localization.dart';
+import 'package:repit/src/feature/settings/widget/settings_scope.dart';
 
 /// {@template sample_page}
 /// SamplePage widget

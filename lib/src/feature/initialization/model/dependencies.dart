@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sizzle_starter/src/feature/settings/bloc/settings_bloc.dart';
+import 'package:repit/src/feature/settings/bloc/settings_bloc.dart';
 
 /// {@template dependencies}
 /// Dependencies container
