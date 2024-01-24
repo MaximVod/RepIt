@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:octopus/octopus.dart';
 import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/home/widget/home_screen.dart';
 import 'package:repit/src/feature/settings/widget/settings_scope.dart';
@@ -21,7 +22,7 @@ class MaterialContext extends StatelessWidget {
     final theme = SettingsScope.themeOf(context).theme;
     final locale = SettingsScope.localeOf(context).locale;
 
-    return MaterialApp(
+    return MaterialApp.router(
       key: _globalKey,
       theme: theme.lightTheme,
       darkTheme: theme.darkTheme,
@@ -29,12 +30,12 @@ class MaterialContext extends StatelessWidget {
       localizationsDelegates: Localization.localizationDelegates,
       supportedLocales: Localization.supportedLocales,
       locale: locale,
-      home: const HomeScreen(),
+
       // TODO: You may want to override the default text scaling behavior.
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         minScaleFactor: 1.0,
         maxScaleFactor: 2.0,
-        child: child!,
+        child: OctopusTools(child: child!),
       ),
     );
   }

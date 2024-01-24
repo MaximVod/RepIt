@@ -8,9 +8,9 @@ abstract class InitializationFactory {
   EnvironmentStore getEnvironmentStore();
 
   /// Create a tracking manager.
-  ExceptionTrackingManager createTrackingManager(
-    EnvironmentStore environmentStore,
-  );
+  // ExceptionTrackingManager createTrackingManager(
+  //   EnvironmentStore environmentStore,
+  // );
 }
 
 /// {@macro initialization_factory}
