@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/octopus.dart';
 import 'package:repit/src/core/localization/localization.dart';
-import 'package:repit/src/feature/home/widget/home_screen.dart';
 import 'package:repit/src/feature/settings/widget/settings_scope.dart';
+
+import '../../../common/router/router_state_mixin.dart';
 
 /// {@template material_context}
 /// [MaterialContext] is an entry point to the material context.
 ///
 /// This widget sets locales, themes and routing.
 /// {@endtemplate}
-class MaterialContext extends StatelessWidget {
+class MaterialContext extends StatefulWidget {
   /// {@macro material_context}
   const MaterialContext({super.key});
 
@@ -18,24 +19,29 @@ class MaterialContext extends StatelessWidget {
   static final _globalKey = GlobalKey();
 
   @override
+  State<MaterialContext> createState() => _MaterialContextState();
+}
+
+class _MaterialContextState extends State<MaterialContext>
+    with RouterStateMixin {
+  @override
   Widget build(BuildContext context) {
     final theme = SettingsScope.themeOf(context).theme;
     final locale = SettingsScope.localeOf(context).locale;
 
     return MaterialApp.router(
-      key: _globalKey,
+      key: MaterialContext._globalKey,
       theme: theme.lightTheme,
       darkTheme: theme.darkTheme,
       themeMode: theme.mode,
       localizationsDelegates: Localization.localizationDelegates,
       supportedLocales: Localization.supportedLocales,
       locale: locale,
-
-      // TODO: You may want to override the default text scaling behavior.
+      routerConfig: router.config,
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         minScaleFactor: 1.0,
         maxScaleFactor: 2.0,
-        child: OctopusTools(child: child!),
+        child: OctopusTools(octopus: router, child: child ?? const SizedBox()),
       ),
     );
   }
