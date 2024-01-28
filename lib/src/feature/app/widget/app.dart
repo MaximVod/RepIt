@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repit/src/feature/app/widget/material_context.dart';
+import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/initialization/logic/initialization_processor.dart';
 import 'package:repit/src/feature/initialization/model/dependencies.dart';
 import 'package:repit/src/feature/initialization/widget/dependencies_scope.dart';
@@ -21,10 +23,22 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DependenciesScope(
-    dependencies: result.dependencies,
-    child: SettingsScope(
-      settingsBloc: result.dependencies.settingsBloc,
-      child: const MaterialContext(),
-    ),
-  );
+        dependencies: result.dependencies,
+        repositories: result.repositories,
+        child: SettingsScope(
+          settingsBloc: result.dependencies.settingsBloc,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) =>
+                    CategoriesBloc(result.repositories.categoriesRepository)
+                      ..add(
+                        FetchAllCategories(),
+                      ),
+              ),
+            ],
+            child: const MaterialContext(),
+          ),
+        ),
+      );
 }

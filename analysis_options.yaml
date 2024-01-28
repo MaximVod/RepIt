@@ -3,11 +3,15 @@ include: package:sizzle_lints/sizzle_lints.yaml
 analyzer:
   exclude: 
     - "lib/src/core/localization/generated/**"
-  
+linter:
+  rules:
+    - public_member_api_docs: false
+
 dart_code_metrics:
   metrics:
     cyclomatic-complexity: 20
   rules:
+
     # Show potential errors
     - avoid-cascade-after-if-null
     - avoid-collection-methods-with-unrelated-types

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 
 /// {@template sample_page}
 /// SamplePage widget
@@ -12,12 +14,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<String> categories = [
-    "First category",
-    "Second category",
-    "Third Category",
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -46,7 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 NewCategoryDialog(),
           ).then((value) {
             setState(() {
-              categories.add(value ?? "");
+              if (value != null) {
+                context.read<CategoriesBloc>().add(AddCategory(value));
+              }
             });
           }),
           child: SizedBox(
@@ -68,46 +66,57 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           centerTitle: true,
         ),
-        body: CustomScrollView(
-          slivers: <Widget>[
-            /// Top padding
-            const SliverPadding(
-              padding: EdgeInsets.only(top: 16),
-            ),
-            // Catalog root categories
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      tileColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      title: Text(
-                        categories[index],
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
+        body: BlocBuilder<CategoriesBloc, CategoriesState>(
+          builder: (context, state) => switch (state) {
+            CategoriesIdle() => const SizedBox(),
+            CategoriesLoading() => const SizedBox(),
+            CategoriesFetched() => CustomScrollView(
+                slivers: <Widget>[
+                  /// Top padding
+                  const SliverPadding(
+                    padding: EdgeInsets.only(top: 16),
+                  ),
+                  // Catalog root categories
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
+                            tileColor: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer,
+                            title: Text(
+                              state.categories[index].name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondaryContainer,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        childCount: state.categories.length,
                       ),
                     ),
                   ),
-                  childCount: categories.length,
-                ),
-              ),
-            ),
 
-            /// Bottom padding
-            const SliverPadding(
-              padding: EdgeInsets.only(bottom: 16),
-            ),
-          ],
+                  /// Bottom padding
+                  const SliverPadding(
+                    padding: EdgeInsets.only(bottom: 16),
+                  ),
+                ],
+              ),
+            CategoriesFailure() => const SizedBox(),
+          },
         ),
       );
 }

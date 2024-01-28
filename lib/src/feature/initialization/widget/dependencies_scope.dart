@@ -12,11 +12,15 @@ class DependenciesScope extends InheritedWidget {
   const DependenciesScope({
     required super.child,
     required this.dependencies,
+    required this.repositories,
     super.key,
   });
 
   /// The dependencies
   final Dependencies dependencies;
+
+  /// The dependencies
+  final Repositories repositories;
 
   /// Get the dependencies from the [context].
   static Dependencies of(BuildContext context) =>

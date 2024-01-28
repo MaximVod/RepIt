@@ -1,3 +1,6 @@
+import 'package:repit/src/core/components/database/database.dart';
+import 'package:repit/src/feature/home/data/categories_date_source.dart';
+import 'package:repit/src/feature/home/data/categories_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:repit/src/core/utils/logger.dart';
 import 'package:repit/src/feature/app/logic/tracking_manager.dart';
@@ -34,6 +37,15 @@ final class InitializationProcessor {
     return Dependencies(
       sharedPreferences: sharedPreferences,
       settingsBloc: settingsBloc,
+    );
+  }
+
+  Future<Repositories> _initRepositories() async {
+    final categoriesRepository =
+        CategoriesRepositoryImpl(CategoriesDao(AppDatabase()));
+
+    return Repositories(
+      categoriesRepository: categoriesRepository,
     );
   }
 
@@ -79,10 +91,14 @@ final class InitializationProcessor {
     // initialize dependencies
     final dependencies = await _initDependencies();
     logger.info('Dependencies initialized');
+    // initialize dependencies
+    final repositories = await _initRepositories();
+    logger.info('Repositories initialized');
 
     stopwatch.stop();
     final result = InitializationResult(
       dependencies: dependencies,
+      repositories: repositories,
       msSpent: stopwatch.elapsedMilliseconds,
     );
     return result;
