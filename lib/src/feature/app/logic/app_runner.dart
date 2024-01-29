@@ -35,7 +35,7 @@ final class AppRunner with InitializationFactoryImpl {
     final environmentStore = getEnvironmentStore();
 
     final initializationProcessor = InitializationProcessor(
-      trackingManager: createTrackingManager(environmentStore),
+      //trackingManager: createTrackingManager(environmentStore),
       environmentStore: environmentStore,
     );
 

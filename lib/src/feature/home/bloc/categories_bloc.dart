@@ -26,7 +26,6 @@ class CategoriesFailure implements CategoriesState {
   CategoriesFailure(this.error);
 }
 
-
 ///Events for logic with categories
 sealed class CategoriesEvent {}
 
@@ -37,6 +36,17 @@ class FetchAllCategories implements CategoriesEvent {
 class AddCategory implements CategoriesEvent {
   final String categoryName;
   AddCategory(this.categoryName);
+}
+
+class RemoveCategory implements CategoriesEvent {
+  final CategoryEntity entity;
+  RemoveCategory(this.entity);
+}
+
+class EditCategory implements CategoriesEvent {
+  final CategoryEntity entity;
+  final String newCategoryName;
+  EditCategory(this.entity, this.newCategoryName);
 }
 
 ///Categories BLoC
@@ -50,7 +60,10 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     on<CategoriesEvent>(
       (event, emitter) => switch (event) {
         FetchAllCategories() => _fetchAllCategories(event, emitter),
-        AddCategory() => _insertCategory(event, emitter, event.categoryName)
+        AddCategory() => _insertCategory(event, emitter, event.categoryName),
+        RemoveCategory() => _removeCategory(event, emitter, event.entity),
+        EditCategory() =>
+          _editCategory(event, emitter, event.entity, event.newCategoryName)
       },
       transformer: bloc_concurrency.droppable(),
     );
@@ -72,11 +85,50 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     }
   }
 
-  Future<void> _insertCategory(CategoriesEvent event,
-      Emitter<CategoriesState> emitter, String categoryName) async {
+  Future<void> _insertCategory(
+    CategoriesEvent event,
+    Emitter<CategoriesState> emitter,
+    String categoryName,
+  ) async {
     try {
       emitter(CategoriesLoading());
       await _categoriesRepository.addCategory(categoryName);
+      final categories = await _categoriesRepository.getAllCategories();
+      return emitter(CategoriesFetched(categories));
+    } on Object catch (error) {
+      emitter(
+        CategoriesFailure(error.toString()),
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> _removeCategory(
+    CategoriesEvent event,
+    Emitter<CategoriesState> emitter,
+    CategoryEntity entity,
+  ) async {
+    try {
+      emitter(CategoriesLoading());
+      await _categoriesRepository.removeCategory(entity);
+      final categories = await _categoriesRepository.getAllCategories();
+      return emitter(CategoriesFetched(categories));
+    } on Object catch (error) {
+      emitter(
+        CategoriesFailure(error.toString()),
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> _editCategory(
+      CategoriesEvent event,
+      Emitter<CategoriesState> emitter,
+      CategoryEntity entity,
+      String newCategoryName,) async {
+    try {
+      emitter(CategoriesLoading());
+      await _categoriesRepository.updateCategory(entity, newCategoryName);
       final categories = await _categoriesRepository.getAllCategories();
       return emitter(CategoriesFetched(categories));
     } on Object catch (error) {

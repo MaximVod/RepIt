@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/octopus.dart';
+import 'package:repit/src/common/router/router_state_mixin.dart';
 import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/settings/widget/settings_scope.dart';
-
-import '../../../common/router/router_state_mixin.dart';
 
 /// {@template material_context}
 /// [MaterialContext] is an entry point to the material context.

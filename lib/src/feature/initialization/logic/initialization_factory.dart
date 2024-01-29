@@ -15,15 +15,15 @@ abstract class InitializationFactory {
 
 /// {@macro initialization_factory}
 mixin InitializationFactoryImpl implements InitializationFactory {
-  @override
-  SentryTrackingManager createTrackingManager(
-    EnvironmentStore environmentStore,
-  ) =>
-      SentryTrackingManager(
-        logger,
-        environment: environmentStore.environment.value,
-        sentryDsn: environmentStore.sentryDsn,
-      );
+  // @override
+  // SentryTrackingManager createTrackingManager(
+  //   EnvironmentStore environmentStore,
+  // ) =>
+  //     SentryTrackingManager(
+  //       logger,
+  //       environment: environmentStore.environment.value,
+  //       sentryDsn: environmentStore.sentryDsn,
+  //     );
 
   @override
   EnvironmentStore getEnvironmentStore() => const EnvironmentStore();

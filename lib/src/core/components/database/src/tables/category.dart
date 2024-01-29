@@ -7,5 +7,5 @@ class Categories extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   /// The title of this category.
-  TextColumn get title => text().withLength(min: 6, max: 32)();
+  TextColumn get title => text().withLength(min: 2, max: 32)();
 }

@@ -13,6 +13,13 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+///Enum for category card
+enum CardAction {
+  /// Edit category
+  edit,
+  /// Delete Category
+  delete }
+
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
@@ -23,29 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         floatingActionButton: GestureDetector(
-          onTap: () => showGeneralDialog<String>(
-            context: context,
-            barrierLabel: "Label",
-            barrierDismissible: true,
-            barrierColor: Colors.black.withOpacity(0.5),
-            transitionDuration: const Duration(milliseconds: 250),
-            transitionBuilder:
-                (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(
-              opacity: animation,
-              child: ScaleTransition(
-                scale: animation,
-                child: child,
-              ),
-            ),
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                NewCategoryDialog(),
-          ).then((value) {
-            setState(() {
-              if (value != null) {
-                context.read<CategoriesBloc>().add(AddCategory(value));
-              }
-            });
+          onTap: () => _showDialog().then((dialogValue) {
+            if (dialogValue != null) {
+              context.read<CategoriesBloc>().add(AddCategory(dialogValue));
+            }
           }),
           child: SizedBox(
             height: 50,
@@ -84,6 +72,39 @@ class _HomeScreenState extends State<HomeScreen> {
                         (context, index) => Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: ListTile(
+                            onTap: () {},
+                            trailing: PopupMenuButton<CardAction>(
+                              onSelected: (value) {
+                                if (value == CardAction.delete) {
+                                  context.read<CategoriesBloc>().add(
+                                        RemoveCategory(state.categories[index]),
+                                      );
+                                }
+                                if (value == CardAction.edit) {
+                                  _showDialog(isNew: false).then((dialogValue) {
+                                    if (dialogValue != null) {
+                                      context.read<CategoriesBloc>().add(
+                                            EditCategory(
+                                              state.categories[index],
+                                              dialogValue,
+                                            ),
+                                          );
+                                    }
+                                  });
+                                }
+                              },
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<CardAction>>[
+                                const PopupMenuItem<CardAction>(
+                                  value: CardAction.edit,
+                                  child: Text('Edit'),
+                                ),
+                                const PopupMenuItem<CardAction>(
+                                  value: CardAction.delete,
+                                  child: Text('Delete'),
+                                ),
+                              ],
+                            ),
                             contentPadding: const EdgeInsets.all(8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -119,19 +140,45 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       );
+
+  Future<String?> _showDialog({bool isNew = true}) async =>
+      showGeneralDialog<String>(
+        context: context,
+        barrierLabel: "Label",
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionDuration: const Duration(milliseconds: 250),
+        transitionBuilder: (context, animation, secondaryAnimation, child) =>
+            FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: animation,
+            child: child,
+          ),
+        ),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            NewCategoryDialog(
+          isNew: isNew,
+        ),
+      );
 }
 
 /// Dialog for create new Category
 class NewCategoryDialog extends StatelessWidget {
   /// {@macro sample_page}
-  NewCategoryDialog({super.key});
+  NewCategoryDialog({required this.isNew, super.key});
+
+  /// Flag for determine if dialog uses for new Category or edit
+  final bool isNew;
 
   /// TextField for category name
   final TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text("Category name"),
+        title: isNew
+            ? const Text("Category name")
+            : const Text("Edit category name"),
         content: TextField(
           controller: textEditingController,
           decoration: const InputDecoration(hintText: 'Enter some text'),
@@ -141,7 +188,7 @@ class NewCategoryDialog extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).pop(textEditingController.text);
             },
-            child: const Text("Ready"),
+            child: isNew ? const Text("Ready") : const Text("Edit"),
           ),
         ],
       );

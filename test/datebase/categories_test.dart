@@ -39,5 +39,27 @@ void main() {
       expect(category, true);
       expect(secondId > firstId, true);
     });
+
+    test('Remove category test', () async {
+      const String firstCategory = "firstCategory";
+      const String secondCategory = "secondCategory";
+      await repository.addCategory(firstCategory);
+      await repository.addCategory(secondCategory);
+      final list = await repository.getAllCategories();
+      await repository.removeCategory(list[1]);
+      final newList = await repository.getAllCategories();
+      expect(newList.length, 1);
+    });
+
+    test('Edit category test', () async {
+      const String firstCategory = "firstCategory";
+      const String newCategoryName = "newCategoryName";
+      await repository.addCategory(firstCategory);
+      final list = await repository.getAllCategories();
+      await repository.updateCategory(list[0], newCategoryName);
+      final newList = await repository.getAllCategories();
+      expect(newList.length, 1);
+      expect(newList.first.name != firstCategory, true);
+    });
   });
 }

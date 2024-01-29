@@ -1,6 +1,6 @@
 import 'package:repit/src/feature/home/data/categories_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:repit/src/feature/settings/bloc/settings_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// {@template dependencies}
 /// Dependencies container

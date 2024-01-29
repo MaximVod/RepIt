@@ -1,9 +1,7 @@
 import 'package:repit/src/core/components/database/database.dart';
+import 'package:repit/src/core/utils/logger.dart';
 import 'package:repit/src/feature/home/data/categories_date_source.dart';
 import 'package:repit/src/feature/home/data/categories_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:repit/src/core/utils/logger.dart';
-import 'package:repit/src/feature/app/logic/tracking_manager.dart';
 import 'package:repit/src/feature/initialization/model/dependencies.dart';
 import 'package:repit/src/feature/initialization/model/environment_store.dart';
 import 'package:repit/src/feature/settings/bloc/settings_bloc.dart';
@@ -12,6 +10,7 @@ import 'package:repit/src/feature/settings/data/locale_repository.dart';
 import 'package:repit/src/feature/settings/data/theme_datasource.dart';
 import 'package:repit/src/feature/settings/data/theme_mode_codec.dart';
 import 'package:repit/src/feature/settings/data/theme_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'initialization_factory.dart';
 
@@ -19,14 +18,14 @@ part 'initialization_factory.dart';
 /// A class which is responsible for processing initialization steps.
 /// {@endtemplate}
 final class InitializationProcessor {
-  final ExceptionTrackingManager _trackingManager;
+  //final ExceptionTrackingManager _trackingManager;
   final EnvironmentStore _environmentStore;
 
   /// {@macro initialization_processor}
   const InitializationProcessor({
-    required ExceptionTrackingManager trackingManager,
+    //required ExceptionTrackingManager trackingManager,
     required EnvironmentStore environmentStore,
-  })  : _trackingManager = trackingManager,
+  })  : //_trackingManager = trackingManager,
         _environmentStore = environmentStore;
 
   Future<Dependencies> _initDependencies() async {
@@ -83,7 +82,7 @@ final class InitializationProcessor {
   /// (for example, caching or enabling tracking manager)
   Future<InitializationResult> initialize() async {
     if (_environmentStore.enableTrackingManager) {
-      await _trackingManager.enableReporting();
+     // await _trackingManager.enableReporting();
     }
     final stopwatch = Stopwatch()..start();
 

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:repit/src/core/utils/logger.dart';
 
@@ -92,7 +91,8 @@ final class SentryTrackingManager extends ExceptionTrackingManagerBase {
       return;
     }
 
-    //await Sentry.captureException(error ?? log.message, stackTrace: stackTrace);
+    //await Sentry.
+    // captureException(error ?? log.message, stackTrace: stackTrace);
   }
 
   @override
