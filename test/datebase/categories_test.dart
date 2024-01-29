@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -5,6 +6,11 @@ import 'package:repit/src/core/components/database/src/app_database.dart';
 import 'package:repit/src/feature/home/data/categories_date_source.dart';
 import 'package:repit/src/feature/home/data/categories_repository.dart';
 import 'package:repit/src/feature/home/model/category_entity.dart';
+
+const String firstCategory = "firstCategory";
+const String secondCategory = "secondCategory";
+const String emptyCategoryName = "";
+const String longCategoryName = "Lorem ipsum dolor sit amet.";
 
 void main() {
   late AppDatabase database;
@@ -28,8 +34,12 @@ void main() {
     });
 
     test('Create category test', () async {
-      const String firstCategory = "firstCategory";
-      const String secondCategory = "secondCategory";
+      /// Test on empty name
+      expect(() => repository.addCategory(emptyCategoryName),
+          throwsA(isInstanceOf<InvalidDataException>()),);
+      /// Test on long name
+      expect(() => repository.addCategory(longCategoryName),
+          throwsA(isInstanceOf<InvalidDataException>()),);
       await repository.addCategory(firstCategory);
       await repository.addCategory(secondCategory);
       final list = await repository.getAllCategories();
@@ -41,8 +51,6 @@ void main() {
     });
 
     test('Remove category test', () async {
-      const String firstCategory = "firstCategory";
-      const String secondCategory = "secondCategory";
       await repository.addCategory(firstCategory);
       await repository.addCategory(secondCategory);
       final list = await repository.getAllCategories();
@@ -52,14 +60,28 @@ void main() {
     });
 
     test('Edit category test', () async {
-      const String firstCategory = "firstCategory";
       const String newCategoryName = "newCategoryName";
       await repository.addCategory(firstCategory);
       final list = await repository.getAllCategories();
+      /// Test on empty name
+      expect(() => repository.updateCategory(list[0], emptyCategoryName),
+        throwsA(isInstanceOf<InvalidDataException>()),);
+      /// Test on long name
+      expect(() => repository.updateCategory(list[0], longCategoryName),
+        throwsA(isInstanceOf<InvalidDataException>()),);
       await repository.updateCategory(list[0], newCategoryName);
       final newList = await repository.getAllCategories();
       expect(newList.length, 1);
       expect(newList.first.name != firstCategory, true);
+    });
+
+    test('Delete list of categories test', () async {
+      await repository.addCategory(firstCategory);
+      await repository.addCategory(secondCategory);
+      final list = await repository.getAllCategories();
+      await repository.removeCategories(list.map((e) => e.id));
+      final newList = await repository.getAllCategories();
+      expect(newList.length, 0);
     });
   });
 }

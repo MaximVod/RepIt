@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 
+import 'category_item_widget.dart';
+
 /// {@template sample_page}
 /// SamplePage widget
 /// {@endtemplate}
@@ -17,10 +19,28 @@ class HomeScreen extends StatefulWidget {
 enum CardAction {
   /// Edit category
   edit,
-  /// Delete Category
-  delete }
 
-class _HomeScreenState extends State<HomeScreen> {
+  /// Delete Category
+  delete
+}
+
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  bool editMode = false;
+
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 250),
+    vsync: this,
+  );
+  late final Animation<Offset> _offsetAnimation = Tween<Offset>(
+    begin: const Offset(-1.2, 0.0),
+    end: Offset.zero,
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -29,22 +49,28 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-        floatingActionButton: GestureDetector(
-          onTap: () => _showDialog().then((dialogValue) {
-            if (dialogValue != null) {
-              context.read<CategoriesBloc>().add(AddCategory(dialogValue));
+        floatingActionButton: FloatingActionButton(
+          elevation: 0,
+          onPressed: () {
+            if (editMode) {
+              context.read<CategoriesBloc>().add(RemoveCategories());
+              setState(() {
+                editMode = false;
+              });
+            } else {
+              _showDialog().then((dialogValue) {
+                if (dialogValue != null) {
+                  context.read<CategoriesBloc>().add(AddCategory(dialogValue));
+                }
+              });
             }
-          }),
-          child: SizedBox(
-            height: 50,
-            width: 50,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.add),
+          },
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              shape: BoxShape.circle,
             ),
+            child: Icon(editMode ? Icons.delete : Icons.add),
           ),
         ),
         appBar: AppBar(
@@ -53,6 +79,23 @@ class _HomeScreenState extends State<HomeScreen> {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: 'Open shopping cart',
+              onPressed: () {
+                setState(() {
+                  if (!editMode) {
+                    editMode = true;
+                    _controller.forward();
+                  } else {
+                    editMode = false;
+                    _controller.reverse();
+                  }
+                });
+              },
+            ),
+          ],
         ),
         body: BlocBuilder<CategoriesBloc, CategoriesState>(
           builder: (context, state) => switch (state) {
@@ -69,61 +112,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) => Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: ListTile(
-                            onTap: () {},
-                            trailing: PopupMenuButton<CardAction>(
-                              onSelected: (value) {
-                                if (value == CardAction.delete) {
-                                  context.read<CategoriesBloc>().add(
-                                        RemoveCategory(state.categories[index]),
-                                      );
-                                }
-                                if (value == CardAction.edit) {
-                                  _showDialog(isNew: false).then((dialogValue) {
-                                    if (dialogValue != null) {
-                                      context.read<CategoriesBloc>().add(
-                                            EditCategory(
-                                              state.categories[index],
-                                              dialogValue,
-                                            ),
-                                          );
-                                    }
-                                  });
-                                }
-                              },
-                              itemBuilder: (BuildContext context) =>
-                                  <PopupMenuEntry<CardAction>>[
-                                const PopupMenuItem<CardAction>(
-                                  value: CardAction.edit,
-                                  child: Text('Edit'),
-                                ),
-                                const PopupMenuItem<CardAction>(
-                                  value: CardAction.delete,
-                                  child: Text('Delete'),
-                                ),
-                              ],
-                            ),
-                            contentPadding: const EdgeInsets.all(8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            tileColor: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer,
-                            title: Text(
-                              state.categories[index].name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondaryContainer,
-                                  ),
-                            ),
-                          ),
+                        (context, index) => CategoryItemWidget(
+                          editMode: editMode,
+                          category: state.categories[index],
+                          animation: _offsetAnimation,
                         ),
                         childCount: state.categories.length,
                       ),
@@ -186,7 +178,9 @@ class NewCategoryDialog extends StatelessWidget {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(textEditingController.text);
+              if (textEditingController.text.length > 1) {
+                Navigator.of(context).pop(textEditingController.text);
+              }
             },
             child: isNew ? const Text("Ready") : const Text("Edit"),
           ),

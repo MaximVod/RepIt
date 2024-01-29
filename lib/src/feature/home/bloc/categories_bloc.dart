@@ -38,9 +38,19 @@ class AddCategory implements CategoriesEvent {
   AddCategory(this.categoryName);
 }
 
+class MarkOnDelete implements CategoriesEvent {
+  final int categoryId;
+  final bool mark;
+  MarkOnDelete(this.categoryId, {required this.mark});
+}
+
 class RemoveCategory implements CategoriesEvent {
   final CategoryEntity entity;
   RemoveCategory(this.entity);
+}
+
+class RemoveCategories implements CategoriesEvent {
+  RemoveCategories();
 }
 
 class EditCategory implements CategoriesEvent {
@@ -54,23 +64,26 @@ class EditCategory implements CategoriesEvent {
 class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   final CategoriesRepository _categoriesRepository;
 
+  List<int> categoriesOnDelete = [];
+
   CategoriesBloc(CategoriesRepository categoriesRepository)
       : _categoriesRepository = categoriesRepository,
         super(CategoriesIdle()) {
     on<CategoriesEvent>(
       (event, emitter) => switch (event) {
-        FetchAllCategories() => _fetchAllCategories(event, emitter),
-        AddCategory() => _insertCategory(event, emitter, event.categoryName),
-        RemoveCategory() => _removeCategory(event, emitter, event.entity),
+        FetchAllCategories() => _fetchAllCategories(emitter),
+        AddCategory() => _insertCategory(emitter, event.categoryName),
+        RemoveCategory() => _removeCategory(emitter, event.entity),
         EditCategory() =>
-          _editCategory(event, emitter, event.entity, event.newCategoryName)
+          _editCategory(event, emitter, event.entity, event.newCategoryName),
+        MarkOnDelete() => _markOnDelete(event.categoryId, event.mark),
+      RemoveCategories() => _removeCategories(emitter)
       },
       transformer: bloc_concurrency.droppable(),
     );
   }
 
   Future<void> _fetchAllCategories(
-    CategoriesEvent event,
     Emitter<CategoriesState> emitter,
   ) async {
     try {
@@ -86,7 +99,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   }
 
   Future<void> _insertCategory(
-    CategoriesEvent event,
     Emitter<CategoriesState> emitter,
     String categoryName,
   ) async {
@@ -104,7 +116,6 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   }
 
   Future<void> _removeCategory(
-    CategoriesEvent event,
     Emitter<CategoriesState> emitter,
     CategoryEntity entity,
   ) async {
@@ -121,11 +132,39 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     }
   }
 
-  Future<void> _editCategory(
-      CategoriesEvent event,
+  Future<void> _removeCategories(
       Emitter<CategoriesState> emitter,
-      CategoryEntity entity,
-      String newCategoryName,) async {
+      ) async {
+    try {
+
+      Iterable<int> ds = categoriesOnDelete;
+      print("DSDSDS " + ds.toString());
+      emitter(CategoriesLoading());
+      await _categoriesRepository.removeCategories(ds);
+      final categories = await _categoriesRepository.getAllCategories();
+      return emitter(CategoriesFetched(categories));
+    } on Object catch (error) {
+      emitter(
+        CategoriesFailure(error.toString()),
+      );
+      rethrow;
+    }
+  }
+
+  void _markOnDelete(int categoryId, bool mark) {
+    if (mark) {
+      categoriesOnDelete.add(categoryId);
+    } else {
+      categoriesOnDelete.remove(categoryId);
+    }
+  }
+
+  Future<void> _editCategory(
+    CategoriesEvent event,
+    Emitter<CategoriesState> emitter,
+    CategoryEntity entity,
+    String newCategoryName,
+  ) async {
     try {
       emitter(CategoriesLoading());
       await _categoriesRepository.updateCategory(entity, newCategoryName);

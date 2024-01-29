@@ -14,13 +14,15 @@ abstract interface class CategoriesRepository {
   /// Remove category from db
   Future<void> removeCategory(CategoryEntity entity);
 
+  /// Remove categories from db
+  Future<void> removeCategories(Iterable<int> entries);
+
   /// Update category in db
   Future<void> updateCategory(CategoryEntity entity, String newCategoryName);
 }
 
 /// Implementation of CategoriesRepository
 class CategoriesRepositoryImpl implements CategoriesRepository {
-
   /// Date source instance
   final CategoriesDataSource categoriesDataSource;
 
@@ -51,4 +53,8 @@ class CategoriesRepositoryImpl implements CategoriesRepository {
         CategoriesCompanion.insert(title: entity.name, id: Value(entity.id)),
         newCategoryName,
       );
+
+  @override
+  Future<void> removeCategories(Iterable<int> entries) =>
+      categoriesDataSource.removeCategories(entries);
 }
