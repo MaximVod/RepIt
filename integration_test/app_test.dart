@@ -12,7 +12,7 @@ void main() {
     testWidgets('tap on the floating action button, verify counter',
         (tester) async {
       const environmentStore = EnvironmentStore();
-      final initializationProcessor = InitializationProcessor(
+      const initializationProcessor = InitializationProcessor(
         environmentStore: environmentStore,
       );
       final result = await initializationProcessor.initialize();

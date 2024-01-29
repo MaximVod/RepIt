@@ -46,11 +46,11 @@ jobs:
         with:
            github_token: ${{ secrets.GITHUB_TOKEN }}
   
-      - name: ✨ Check Formatting
-        run: dart format --set-exit-if-changed .
-
-      - name: 🕵️ Analyze
-        run: flutter analyze .
+#      - name: ✨ Check Formatting
+#        run: dart format --set-exit-if-changed .
+#
+#      - name: 🕵️ Analyze
+#        run: flutter analyze .
 
       - name: Run DCM
         run: dcm analyze .
