@@ -58,12 +58,12 @@ jobs:
       - name: 🧪 Run Tests
         run: flutter test --coverage --coverage-path=coverage/lcov.info --test-randomize-ordering-seed=random --concurrency=10
 
-      - name: 📈 Upload Coverage
-        uses: codecov/codecov-action@v3
-        with:
-          # not needed for public repos
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
+#      - name: 📈 Upload Coverage
+#        uses: codecov/codecov-action@v3
+#        with:
+#          # not needed for public repos
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          file: ./coverage/lcov.info
+#          flags: unittests
+#          name: codecov-umbrella
+#          fail_ci_if_error: true
