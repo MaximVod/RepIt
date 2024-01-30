@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 
-import 'category_item_widget.dart';
+import 'package:repit/src/feature/home/widget/category_item_widget.dart';
 
 /// {@template sample_page}
 /// SamplePage widget
@@ -13,15 +13,6 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
-}
-
-///Enum for category card
-enum CardAction {
-  /// Edit category
-  edit,
-
-  /// Delete Category
-  delete
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
@@ -116,6 +107,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           editMode: editMode,
                           category: state.categories[index],
                           animation: _offsetAnimation,
+                          onEdit: () =>
+                              _showDialog(isNew: false).then((dialogValue) {
+                            if (dialogValue != null) {
+                              context.read<CategoriesBloc>().add(
+                                    EditCategory(
+                                      state.categories[index],
+                                      dialogValue,
+                                    ),
+                                  );
+                            }
+                          }),
                         ),
                         childCount: state.categories.length,
                       ),
@@ -156,33 +158,73 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 }
 
 /// Dialog for create new Category
-class NewCategoryDialog extends StatelessWidget {
+class NewCategoryDialog extends StatefulWidget {
   /// {@macro sample_page}
-  NewCategoryDialog({required this.isNew, super.key});
+  const NewCategoryDialog({required this.isNew, super.key});
 
   /// Flag for determine if dialog uses for new Category or edit
   final bool isNew;
 
+  @override
+  State<NewCategoryDialog> createState() => _NewCategoryDialogState();
+}
+
+class _NewCategoryDialogState extends State<NewCategoryDialog> {
   /// TextField for category name
   final TextEditingController textEditingController = TextEditingController();
 
+  bool validText = false;
+
+  @override
+  void initState() {
+    textEditingController.addListener(() {
+      if (textEditingController.text.length > 1) {
+        setState(() {
+          validText = true;
+        });
+      } else {
+        setState(() {
+          validText = false;
+        });
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: isNew
+        title: widget.isNew
             ? const Text("Category name")
             : const Text("Edit category name"),
         content: TextField(
           controller: textEditingController,
+          maxLength: 21,
           decoration: const InputDecoration(hintText: 'Enter some text'),
         ),
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              if (textEditingController.text.length > 1) {
+              if (validText) {
                 Navigator.of(context).pop(textEditingController.text);
               }
             },
-            child: isNew ? const Text("Ready") : const Text("Edit"),
+            child: widget.isNew
+                ? Text(
+                    "Ready",
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: validText
+                              ? Theme.of(context).shadowColor
+                              : Theme.of(context).focusColor,
+                        ),
+                  )
+                : Text(
+                    "Edit",
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: validText
+                              ? Theme.of(context).shadowColor
+                              : Theme.of(context).focusColor,
+                        ),
+                  ),
           ),
         ],
       );

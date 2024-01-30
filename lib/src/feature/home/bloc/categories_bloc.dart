@@ -77,7 +77,7 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
         EditCategory() =>
           _editCategory(event, emitter, event.entity, event.newCategoryName),
         MarkOnDelete() => _markOnDelete(event.categoryId, event.mark),
-      RemoveCategories() => _removeCategories(emitter)
+        RemoveCategories() => _removeCategories(emitter)
       },
       transformer: bloc_concurrency.droppable(),
     );
@@ -133,12 +133,10 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   }
 
   Future<void> _removeCategories(
-      Emitter<CategoriesState> emitter,
-      ) async {
+    Emitter<CategoriesState> emitter,
+  ) async {
     try {
-
-      Iterable<int> ds = categoriesOnDelete;
-      print("DSDSDS " + ds.toString());
+      final Iterable<int> ds = categoriesOnDelete;
       emitter(CategoriesLoading());
       await _categoriesRepository.removeCategories(ds);
       final categories = await _categoriesRepository.getAllCategories();

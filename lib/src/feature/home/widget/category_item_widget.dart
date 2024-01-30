@@ -3,16 +3,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/home/model/category_entity.dart';
 
-class CategoryItemWidget extends StatefulWidget {
-  final bool editMode;
-  final CategoryEntity category;
-  final Animation<Offset> animation;
+///Enum for category card
+enum CardAction {
+  /// Edit category
+  edit,
 
-  const CategoryItemWidget(
-      {super.key,
-      required this.editMode,
-      required this.category,
-      required this.animation});
+  /// Delete Category
+  delete
+}
+
+///Item in categories list UI
+class CategoryItemWidget extends StatefulWidget {
+  ///Flag about if categories list is in Edit Mode
+  final bool editMode;
+  ///CategoryEntity
+  final CategoryEntity category;
+  ///Animation for check box, when Edit Mode choose
+  final Animation<Offset> animation;
+  ///Callback for edit in categories item
+  final VoidCallback onEdit;
+
+  /// Creates a CategoryItemWidget.
+  const CategoryItemWidget({
+    required this.editMode,
+    required this.category,
+    required this.animation,
+    required this.onEdit,
+    super.key,
+  });
 
   @override
   State<CategoryItemWidget> createState() => _CategoryItemWidgetState();
@@ -67,14 +85,43 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget.category.name,
-                      textAlign: TextAlign.start,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer,
-                          ),
+                    child: Row(
+                      children: [
+                        Text(
+                          widget.category.name,
+                          textAlign: TextAlign.start,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondaryContainer,
+                                  ),
+                        ),
+                        const Spacer(),
+                        PopupMenuButton<CardAction>(
+                          onSelected: (value) {
+                            if (value == CardAction.delete) {
+                              context.read<CategoriesBloc>().add(
+                                    RemoveCategory(widget.category),
+                                  );
+                            }
+                            if (value == CardAction.edit) {
+                              widget.onEdit();
+                            }
+                          },
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry<CardAction>>[
+                            const PopupMenuItem<CardAction>(
+                              value: CardAction.edit,
+                              child: Text('Edit'),
+                            ),
+                            const PopupMenuItem<CardAction>(
+                              value: CardAction.delete,
+                              child: Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
