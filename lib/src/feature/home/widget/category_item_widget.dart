@@ -16,10 +16,13 @@ enum CardAction {
 class CategoryItemWidget extends StatefulWidget {
   ///Flag about if categories list is in Edit Mode
   final bool editMode;
+
   ///CategoryEntity
   final CategoryEntity category;
+
   ///Animation for check box, when Edit Mode choose
   final Animation<Offset> animation;
+
   ///Callback for edit in categories item
   final VoidCallback onEdit;
 
@@ -38,11 +41,6 @@ class CategoryItemWidget extends StatefulWidget {
 
 class _CategoryItemWidgetState extends State<CategoryItemWidget> {
   bool checkedForDelete = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) => Stack(

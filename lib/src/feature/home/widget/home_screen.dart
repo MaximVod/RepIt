@@ -18,7 +18,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  bool editMode = false;
+
+  final ValueNotifier<bool> _name = ValueNotifier<bool>(false);
 
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 250),
@@ -35,113 +36,113 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   );
 
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    _name.dispose();
+    super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        floatingActionButton: FloatingActionButton(
-          elevation: 0,
-          onPressed: () {
-            if (editMode) {
-              context.read<CategoriesBloc>().add(RemoveCategories());
-              setState(() {
-                editMode = false;
-              });
-            } else {
-              _showDialog().then((dialogValue) {
-                if (dialogValue != null) {
-                  context.read<CategoriesBloc>().add(AddCategory(dialogValue));
-                }
-              });
-            }
-          },
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(editMode ? Icons.delete : Icons.add),
-          ),
-        ),
-        appBar: AppBar(
-          title: Text(
-            'Card Categories',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.edit),
-              tooltip: 'Open shopping cart',
-              onPressed: () {
-                setState(() {
-                  if (!editMode) {
-                    editMode = true;
-                    _controller.forward();
-                  } else {
-                    editMode = false;
-                    _controller.reverse();
+  Widget build(BuildContext context) => ValueListenableBuilder(
+        valueListenable: _name,
+        builder: (context, value, child) => Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+            enableFeedback: false,
+            elevation: 0,
+            onPressed: () {
+              if (value) {
+                context.read<CategoriesBloc>().add(RemoveCategories());
+                _name.value = false;
+              } else {
+                _showDialog().then((dialogValue) {
+                  if (dialogValue != null) {
+                    context
+                        .read<CategoriesBloc>()
+                        .add(AddCategory(dialogValue));
                   }
                 });
-              },
+              }
+            },
+            child: Icon(value ? Icons.delete : Icons.add),
+          ),
+          appBar: AppBar(
+            title: Text(
+              'Card Categories',
+              style: Theme.of(context).textTheme.titleSmall,
             ),
-          ],
-        ),
-        body: BlocBuilder<CategoriesBloc, CategoriesState>(
-          builder: (context, state) => switch (state) {
-            CategoriesIdle() => const Center(
-                child: CircularProgressIndicator(),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                tooltip: 'Open shopping cart',
+                onPressed: () {
+                  if (!value) {
+                    _name.value = true;
+                    //_name.value = true;
+                    _controller.forward();
+                  } else {
+                    _name.value = false;
+                    // _name.value = false;
+                    _controller.reverse();
+                  }
+                },
               ),
-            CategoriesLoading() => const Center(
-                child: CircularProgressIndicator(),
-              ),
-            CategoriesFetched() => CustomScrollView(
-                slivers: <Widget>[
-                  /// Top padding
-                  const SliverPadding(
-                    padding: EdgeInsets.only(top: 16),
-                  ),
-                  // Catalog root categories
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => CategoryItemWidget(
-                          editMode: editMode,
-                          category: state.categories[index],
-                          animation: _offsetAnimation,
-                          onEdit: () =>
-                              _showDialog(isNew: false).then((dialogValue) {
-                            if (dialogValue != null) {
-                              context.read<CategoriesBloc>().add(
-                                    EditCategory(
-                                      state.categories[index],
-                                      dialogValue,
-                                    ),
-                                  );
-                            }
-                          }),
-                        ),
-                        childCount: state.categories.length,
+            ],
+          ),
+          body: BlocBuilder<CategoriesBloc, CategoriesState>(
+            builder: (context, state) => switch (state) {
+              CategoriesIdle() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              CategoriesLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              CategoriesFetched() => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: CustomScrollView(
+                    slivers: <Widget>[
+                      /// Top padding
+                      const SliverPadding(
+                        padding: EdgeInsets.only(top: 16),
                       ),
-                    ),
-                  ),
+                      // Catalog root categories
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => CategoryItemWidget(
+                            editMode: value,
+                            category: state.categories[index],
+                            animation: _offsetAnimation,
+                            onEdit: () =>
+                                _showDialog(isNew: false).then((dialogValue) {
+                              if (dialogValue != null) {
+                                context.read<CategoriesBloc>().add(
+                                      EditCategory(
+                                        state.categories[index],
+                                        dialogValue,
+                                      ),
+                                    );
+                              }
+                            }),
+                          ),
+                          childCount: state.categories.length,
+                        ),
+                      ),
 
-                  /// Bottom padding
-                  const SliverPadding(
-                    padding: EdgeInsets.only(bottom: 16),
+                      /// Bottom padding
+                      const SliverPadding(
+                        padding: EdgeInsets.only(bottom: 16),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            CategoriesFailure() => ErrorState(
-                errorText: state.error,
-                onTryAgain: () =>
-                    context.read<CategoriesBloc>().add(FetchAllCategories()),
-              )
-          },
+                ),
+              CategoriesFailure() => ErrorState(
+                  errorText: state.error,
+                  onTryAgain: () =>
+                      context.read<CategoriesBloc>().add(FetchAllCategories()),
+                )
+            },
+          ),
         ),
       );
 
