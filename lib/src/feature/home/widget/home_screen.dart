@@ -5,6 +5,7 @@ import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/home/widget/category_item_widget.dart';
 
 import '../../../common/widget/error_state.dart';
+import '../../../core/localization/localization.dart';
 
 /// {@template sample_page}
 /// SamplePage widget
@@ -18,7 +19,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-
   final ValueNotifier<bool> _name = ValueNotifier<bool>(false);
 
   late final AnimationController _controller = AnimationController(
@@ -68,14 +68,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           appBar: AppBar(
             title: Text(
-              'Card Categories',
+              Localization.of(context).categories_card,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             centerTitle: true,
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit),
-                tooltip: 'Open shopping cart',
                 onPressed: () {
                   if (!value) {
                     _name.value = true;
@@ -205,12 +204,18 @@ class _NewCategoryDialogState extends State<NewCategoryDialog> {
   @override
   Widget build(BuildContext context) => AlertDialog(
         title: widget.isNew
-            ? const Text("Category name")
-            : const Text("Edit category name"),
+            ? Text(
+                Localization.of(context).category_name,
+              )
+            : Text(
+                Localization.of(context).edit_category_name,
+              ),
         content: TextField(
           controller: textEditingController,
           maxLength: 21,
-          decoration: const InputDecoration(hintText: 'Enter some text'),
+          decoration: InputDecoration(
+            hintText: Localization.of(context).category_name_hint,
+          ),
         ),
         actions: <Widget>[
           TextButton(
@@ -221,7 +226,7 @@ class _NewCategoryDialogState extends State<NewCategoryDialog> {
             },
             child: widget.isNew
                 ? Text(
-                    "Ready",
+                    Localization.of(context).ready,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: validText
                               ? Theme.of(context).shadowColor
@@ -229,7 +234,7 @@ class _NewCategoryDialogState extends State<NewCategoryDialog> {
                         ),
                   )
                 : Text(
-                    "Edit",
+                    Localization.of(context).edit,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: validText
                               ? Theme.of(context).shadowColor

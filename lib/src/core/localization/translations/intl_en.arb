@@ -4,16 +4,13 @@
     "@appTitle": {
       "description": "The title of the application"
     },
-    "custom_colors": "Custom Colors",
-    "@custom_colors": {
-      "description": "Custom colors for the application"
+    "categories_card": "Card Categories",
+    "@categories_card": {
+      "description": "Title of Home Screen"
     },
-    "default_themes": "Default Themes",
-    "@default_themes": {
-      "description": "Default themes for the application"
-    },
-    "locales": "Locales",
-    "@locales": {
-      "description": "Locales for the application"
-    }
-  }
+    "category_name": "Category name",
+    "edit_category_name": "Edit category name",
+  "category_name_hint": "Enter category name",
+  "ready": "Ready",
+  "edit": "Edit"
+}
