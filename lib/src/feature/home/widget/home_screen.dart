@@ -4,6 +4,8 @@ import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 
 import 'package:repit/src/feature/home/widget/category_item_widget.dart';
 
+import '../../../common/widget/error_state.dart';
+
 /// {@template sample_page}
 /// SamplePage widget
 /// {@endtemplate}
@@ -90,8 +92,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         body: BlocBuilder<CategoriesBloc, CategoriesState>(
           builder: (context, state) => switch (state) {
-            CategoriesIdle() => const SizedBox(),
-            CategoriesLoading() => const SizedBox(),
+            CategoriesIdle() => const Center(
+                child: CircularProgressIndicator(),
+              ),
+            CategoriesLoading() => const Center(
+                child: CircularProgressIndicator(),
+              ),
             CategoriesFetched() => CustomScrollView(
                 slivers: <Widget>[
                   /// Top padding
@@ -130,7 +136,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-            CategoriesFailure() => const SizedBox(),
+            CategoriesFailure() => ErrorState(
+                errorText: state.error,
+                onTryAgain: () =>
+                    context.read<CategoriesBloc>().add(FetchAllCategories()),
+              )
           },
         ),
       );
