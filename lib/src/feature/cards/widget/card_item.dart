@@ -32,7 +32,7 @@ class _CardItemState extends State<CardItem> with TickerProviderStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) => InkWell(
+  Widget build(BuildContext context) => GestureDetector(
         onTap: () {
           if (_animationStatus == AnimationStatus.dismissed) {
             _animationController.forward();

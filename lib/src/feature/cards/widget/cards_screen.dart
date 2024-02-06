@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:repit/src/feature/cards/widget/card_item.dart';
 
@@ -14,9 +15,9 @@ class CardsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<CardEntity> cards = [
-      CardEntity(id: 1, key: "First", value: "Первый"),
-      CardEntity(id: 2, key: "Key", value: "Ключ"),
-      CardEntity(id: 3, key: "Value", value: "Значение")
+      const CardEntity(id: 1, key: "First", value: "Первый"),
+      const CardEntity(id: 2, key: "Key", value: "Ключ"),
+      const CardEntity(id: 3, key: "Value", value: "Значение"),
     ];
     return SafeArea(
       child: Scaffold(
@@ -27,14 +28,22 @@ class CardsScreen extends StatelessWidget {
           ),
           centerTitle: true,
         ),
-        body: CustomScrollView(
-          scrollDirection: Axis.horizontal,
-          slivers: [SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) => CardItem(card: cards[index],),
-              childCount: cards.length,
+        body: Center(
+          child: CarouselSlider.builder(
+            options: CarouselOptions(
+              height: 400,
+              enlargeCenterPage: true,
+              viewportFraction: 0.5,
+              enlargeFactor: 0.3,
             ),
-          ),],
+            itemCount: cards.length,
+            itemBuilder: (
+              BuildContext context,
+              int itemIndex,
+              int pageViewIndex,
+            ) =>
+                CardItem(card: cards[itemIndex]),
+          ),
         ),
       ),
     );
