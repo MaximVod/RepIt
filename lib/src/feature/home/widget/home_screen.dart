@@ -42,103 +42,114 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
         valueListenable: _name,
-        builder: (context, value, child) => Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-            enableFeedback: false,
-            elevation: 0,
-            onPressed: () {
-              if (value) {
-                context.read<CategoriesBloc>().add(RemoveCategories());
-                _name.value = false;
-              } else {
-                _showDialog().then((dialogValue) {
-                  if (dialogValue != null) {
-                    context
-                        .read<CategoriesBloc>()
-                        .add(AddCategory(dialogValue));
-                  }
-                });
-              }
-            },
-            child: Icon(value ? Icons.delete : Icons.add),
-          ),
-          appBar: AppBar(
-            title: Text(
-              Localization.of(context).categories_card,
-              style: Theme.of(context).textTheme.titleSmall,
+        builder: (context, value, child) => SafeArea(
+          child: Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              enableFeedback: false,
+              elevation: 0,
+              onPressed: () {
+                if (value) {
+                  context.read<CategoriesBloc>().add(RemoveCategories());
+                  _name.value = false;
+                } else {
+                  _showDialog().then((dialogValue) {
+                    if (dialogValue != null) {
+                      context
+                          .read<CategoriesBloc>()
+                          .add(AddCategory(dialogValue));
+                    }
+                  });
+                }
+              },
+              child: Icon(value ? Icons.delete : Icons.add),
             ),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  if (!value) {
-                    _name.value = true;
-                    //_name.value = true;
-                    _controller.forward();
-                  } else {
-                    _name.value = false;
-                    // _name.value = false;
-                    _controller.reverse();
-                  }
+            appBar: AppBar(
+              title: Text(
+                Localization.of(context).categories_card,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    if (!value) {
+                      _name.value = true;
+                      //_name.value = true;
+                      _controller.forward();
+                    } else {
+                      _name.value = false;
+                      // _name.value = false;
+                      _controller.reverse();
+                    }
+                  },
+                ),
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: BlocBuilder<CategoriesBloc, CategoriesState>(
+                builder: (context, state) => switch (state) {
+                  CategoriesIdle() => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  CategoriesLoading() => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  CategoriesFetched() => state.categories.isNotEmpty
+                      ? CustomScrollView(
+                          slivers: <Widget>[
+                            /// Top padding
+                            const SliverPadding(
+                              padding: EdgeInsets.only(top: 16),
+                            ),
+                            // Catalog root categories
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => CategoryItemWidget(
+                                  editMode: value,
+                                  category: state.categories[index],
+                                  animation: _offsetAnimation,
+                                  onEdit: () => _showDialog(isNew: false)
+                                      .then((dialogValue) {
+                                    if (dialogValue != null) {
+                                      context.read<CategoriesBloc>().add(
+                                            EditCategory(
+                                              state.categories[index],
+                                              dialogValue,
+                                            ),
+                                          );
+                                    }
+                                  }),
+                                ),
+                                childCount: state.categories.length,
+                              ),
+                            ),
+
+                            /// Bottom padding
+                            const SliverPadding(
+                              padding: EdgeInsets.only(bottom: 16),
+                            ),
+                          ],
+                        )
+                      : Center(
+                          child: Text(
+                            "Список категорий пуст. Пожалуйста добавтье категорию",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                        ),
+                  CategoriesFailure() => ErrorState(
+                      errorText: state.error,
+                      onTryAgain: () => context
+                          .read<CategoriesBloc>()
+                          .add(FetchAllCategories()),
+                    )
                 },
               ),
-            ],
-          ),
-          body: BlocBuilder<CategoriesBloc, CategoriesState>(
-            builder: (context, state) => switch (state) {
-              CategoriesIdle() => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              CategoriesLoading() => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              CategoriesFetched() => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: CustomScrollView(
-                    slivers: <Widget>[
-                      /// Top padding
-                      const SliverPadding(
-                        padding: EdgeInsets.only(top: 16),
-                      ),
-                      // Catalog root categories
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => CategoryItemWidget(
-                            editMode: value,
-                            category: state.categories[index],
-                            animation: _offsetAnimation,
-                            onEdit: () =>
-                                _showDialog(isNew: false).then((dialogValue) {
-                              if (dialogValue != null) {
-                                context.read<CategoriesBloc>().add(
-                                      EditCategory(
-                                        state.categories[index],
-                                        dialogValue,
-                                      ),
-                                    );
-                              }
-                            }),
-                          ),
-                          childCount: state.categories.length,
-                        ),
-                      ),
-
-                      /// Bottom padding
-                      const SliverPadding(
-                        padding: EdgeInsets.only(bottom: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              CategoriesFailure() => ErrorState(
-                  errorText: state.error,
-                  onTryAgain: () =>
-                      context.read<CategoriesBloc>().add(FetchAllCategories()),
-                )
-            },
+            ),
           ),
         ),
       );
