@@ -56,6 +56,9 @@ dependencies:
 
   # Routing and Navigators
   octopus: ^0.0.8
+
+  # UI
+  carousel_slider: ^4.2.1
   
 dev_dependencies:
   # Testing

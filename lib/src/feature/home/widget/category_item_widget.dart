@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/octopus.dart';
 import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/home/model/category_entity.dart';
+
+import '../../../common/router/routes.dart';
 
 ///Enum for category card
 enum CardAction {
@@ -75,51 +78,55 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
             padding: EdgeInsets.only(
               left: widget.editMode ? 50 : 0,
             ),
-            child: Card(
-              elevation: 0,
-              color: Theme.of(context).colorScheme.secondaryContainer,
-              child: Center(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          widget.category.name,
-                          textAlign: TextAlign.start,
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondaryContainer,
-                                  ),
-                        ),
-                        const Spacer(),
-                        PopupMenuButton<CardAction>(
-                          onSelected: (value) {
-                            if (value == CardAction.delete) {
-                              context.read<CategoriesBloc>().add(
-                                    RemoveCategory(widget.category),
-                                  );
-                            }
-                            if (value == CardAction.edit) {
-                              widget.onEdit();
-                            }
-                          },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<CardAction>>[
-                            const PopupMenuItem<CardAction>(
-                              value: CardAction.edit,
-                              child: Text('Edit'),
-                            ),
-                            const PopupMenuItem<CardAction>(
-                              value: CardAction.delete,
-                              child: Text('Delete'),
-                            ),
-                          ],
-                        ),
-                      ],
+            child: InkWell(
+              onTap: () => context.octopus.push(Routes.cards,
+                  arguments: {'category': widget.category.name},),
+              child: Card(
+                elevation: 0,
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                child: Center(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            widget.category.name,
+                            textAlign: TextAlign.start,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondaryContainer,
+                                    ),
+                          ),
+                          const Spacer(),
+                          PopupMenuButton<CardAction>(
+                            onSelected: (value) {
+                              if (value == CardAction.delete) {
+                                context.read<CategoriesBloc>().add(
+                                      RemoveCategory(widget.category),
+                                    );
+                              }
+                              if (value == CardAction.edit) {
+                                widget.onEdit();
+                              }
+                            },
+                            itemBuilder: (BuildContext context) =>
+                                <PopupMenuEntry<CardAction>>[
+                              const PopupMenuItem<CardAction>(
+                                value: CardAction.edit,
+                                child: Text('Edit'),
+                              ),
+                              const PopupMenuItem<CardAction>(
+                                value: CardAction.delete,
+                                child: Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

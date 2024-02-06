@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/octopus.dart';
+import 'package:repit/src/feature/cards/widget/cards_screen.dart';
 
 import 'package:repit/src/feature/home/widget/home_screen.dart';
 
 /// Routes for Octopus Navigator
 enum Routes with OctopusRoute {
   /// Home Route
-  home('home', title: 'Octopus');
+  home('home', title: 'Octopus'),
+  /// Cards Route
+  cards('cards', title: 'Cards');
 
   const Routes(this.name, {this.title});
 
@@ -18,7 +21,12 @@ enum Routes with OctopusRoute {
 
   @override
   Widget builder(BuildContext context, OctopusState state, OctopusNode node) =>
-      switch (this) { Routes.home => const HomeScreen() };
+      switch (this) {
+        Routes.home => const HomeScreen(),
+        Routes.cards => CardsScreen(
+            categoryName: node.arguments['category'] ?? "",
+          ),
+      };
 
   /*
   @override
