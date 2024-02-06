@@ -9,7 +9,7 @@
     "description": "Тайтл главного экрана"
   },
   "category_name": "Имя категории",
-  "edit_category name": "Редактировать имя категории",
+  "edit_category_name": "Редактировать имя категории",
   "category_name_hint": "Введите имя категории",
   "ready": "Готово",
   "edit": "Редактировать"

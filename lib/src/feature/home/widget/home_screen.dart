@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repit/src/common/widget/error_state.dart';
+import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
-
 import 'package:repit/src/feature/home/widget/category_item_widget.dart';
-
-import '../../../common/widget/error_state.dart';
-import '../../../core/localization/localization.dart';
 
 /// {@template sample_page}
 /// SamplePage widget
@@ -229,7 +227,7 @@ class _NewCategoryDialogState extends State<NewCategoryDialog> {
                     Localization.of(context).ready,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: validText
-                              ? Theme.of(context).shadowColor
+                              ? Theme.of(context).cardColor
                               : Theme.of(context).focusColor,
                         ),
                   )
@@ -237,7 +235,7 @@ class _NewCategoryDialogState extends State<NewCategoryDialog> {
                     Localization.of(context).edit,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: validText
-                              ? Theme.of(context).shadowColor
+                              ? Theme.of(context).cardColor
                               : Theme.of(context).focusColor,
                         ),
                   ),
