@@ -55,7 +55,7 @@ void main() {
       );
       final list = await repository.getCardsById(2);
       expect(list.length == 1, true);
-      await repository.removeCategory(
+      await repository.removeCard(
           1,
       );
       final refreshList = await repository.getCardsById(2);
