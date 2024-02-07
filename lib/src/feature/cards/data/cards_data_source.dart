@@ -13,7 +13,7 @@ abstract interface class CardsDataSource {
   Future<void> createCard(CardsCompanion cardsCompanion);
 
   /// Add category to db
-  Future<void> deleteCard(CardsCompanion cardsCompanion);
+  Future<void> deleteCard(int id);
 }
 
 /// DAO categories
@@ -30,8 +30,11 @@ class CardsDao extends DatabaseAccessor<AppDatabase>
       into(attachedDatabase.cards).insert(cardsCompanion);
 
   @override
-  Future<void> deleteCard(CardsCompanion cardsCompanion) async {
-    await delete(attachedDatabase.cards).delete(cardsCompanion);
+  Future<void> deleteCard(int id) async {
+   await (delete(attachedDatabase.cards)
+      ..where((tbl) => tbl.id.isValue(id)))
+        .go();
+   // await delete(attachedDatabase.cards).delete(cardsCompanion);
   }
 
   @override

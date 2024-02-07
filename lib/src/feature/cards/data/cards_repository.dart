@@ -11,7 +11,7 @@ abstract interface class CardsRepository {
   Future<void> addCard(CardEntity card);
 
   /// Remove card
-  Future<void> removeCategory(CardEntity card);
+  Future<void> removeCategory(int id);
 }
 
 /// Implementation of [CardsRepository]
@@ -47,11 +47,5 @@ class CardsRepositoryImpl implements CardsRepository {
   }
 
   @override
-  Future<void> removeCategory(CardEntity card) => _cardsDataSource.deleteCard(
-        CardsCompanion.insert(
-          categoryId: card.categoryId,
-          cardName: card.key,
-          cardValue: card.value,
-        ),
-      );
+  Future<void> removeCategory(int id) => _cardsDataSource.deleteCard(id);
 }
