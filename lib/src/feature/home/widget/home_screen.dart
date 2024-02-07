@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     if (dialogValue != null) {
                                       context.read<CategoriesBloc>().add(
                                             EditCategory(
-                                              state.categories[index],
+                                              state.categories[index].id,
                                               dialogValue,
                                             ),
                                           );

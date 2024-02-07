@@ -35,11 +35,16 @@ void main() {
 
     test('Create category test', () async {
       /// Test on empty name
-      expect(() => repository.addCategory(emptyCategoryName),
-          throwsA(isInstanceOf<InvalidDataException>()),);
+      expect(
+        () => repository.addCategory(emptyCategoryName),
+        throwsA(isInstanceOf<InvalidDataException>()),
+      );
+
       /// Test on long name
-      expect(() => repository.addCategory(longCategoryName),
-          throwsA(isInstanceOf<InvalidDataException>()),);
+      expect(
+        () => repository.addCategory(longCategoryName),
+        throwsA(isInstanceOf<InvalidDataException>()),
+      );
       await repository.addCategory(firstCategory);
       await repository.addCategory(secondCategory);
       final list = await repository.getAllCategories();
@@ -54,7 +59,7 @@ void main() {
       await repository.addCategory(firstCategory);
       await repository.addCategory(secondCategory);
       final list = await repository.getAllCategories();
-      await repository.removeCategory(list[1]);
+      await repository.removeCategory(list[1].id);
       final newList = await repository.getAllCategories();
       expect(newList.length, 1);
     });
@@ -63,13 +68,19 @@ void main() {
       const String newCategoryName = "newCategoryName";
       await repository.addCategory(firstCategory);
       final list = await repository.getAllCategories();
+
       /// Test on empty name
-      expect(() => repository.updateCategory(list[0], emptyCategoryName),
-        throwsA(isInstanceOf<InvalidDataException>()),);
+      expect(
+        () => repository.updateCategory(list[0].id, emptyCategoryName),
+        throwsA(isInstanceOf<InvalidDataException>()),
+      );
+
       /// Test on long name
-      expect(() => repository.updateCategory(list[0], longCategoryName),
-        throwsA(isInstanceOf<InvalidDataException>()),);
-      await repository.updateCategory(list[0], newCategoryName);
+      expect(
+        () => repository.updateCategory(list[0].id, longCategoryName),
+        throwsA(isInstanceOf<InvalidDataException>()),
+      );
+      await repository.updateCategory(list[0].id, newCategoryName);
       final newList = await repository.getAllCategories();
       expect(newList.length, 1);
       expect(newList.first.name != firstCategory, true);

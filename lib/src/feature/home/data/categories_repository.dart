@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart';
 import 'package:repit/src/core/components/database/database.dart';
 import 'package:repit/src/feature/home/data/categories_date_source.dart';
 import 'package:repit/src/feature/home/model/category_entity.dart';
@@ -12,13 +11,13 @@ abstract interface class CategoriesRepository {
   Future<void> addCategory(String categoryName);
 
   /// Remove category from db
-  Future<void> removeCategory(CategoryEntity entity);
+  Future<void> removeCategory(int categoryId);
 
   /// Remove categories from db
   Future<void> removeCategories(Iterable<int> entries);
 
   /// Update category in db
-  Future<void> updateCategory(CategoryEntity entity, String newCategoryName);
+  Future<void> updateCategory(int categoryId, String newCategoryName);
 }
 
 /// Implementation of [CategoriesRepository]
@@ -42,15 +41,13 @@ class CategoriesRepositoryImpl implements CategoriesRepository {
   }
 
   @override
-  Future<void> removeCategory(CategoryEntity entity) =>
-      _categoriesDataSource.removeCategory(
-        CategoriesCompanion.insert(title: entity.name, id: Value(entity.id)),
-      );
+  Future<void> removeCategory(int categoryId) =>
+      _categoriesDataSource.removeCategory(categoryId);
 
   @override
-  Future<void> updateCategory(CategoryEntity entity, String newCategoryName) =>
+  Future<void> updateCategory(int categoryId, String newCategoryName) =>
       _categoriesDataSource.editCategory(
-        CategoriesCompanion.insert(title: entity.name, id: Value(entity.id)),
+        categoryId,
         newCategoryName,
       );
 

@@ -34,7 +34,6 @@ class CardsDao extends DatabaseAccessor<AppDatabase>
    await (delete(attachedDatabase.cards)
       ..where((tbl) => tbl.id.isValue(id)))
         .go();
-   // await delete(attachedDatabase.cards).delete(cardsCompanion);
   }
 
   @override

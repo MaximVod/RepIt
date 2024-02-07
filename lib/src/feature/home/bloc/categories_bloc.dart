@@ -45,8 +45,8 @@ class MarkOnDelete implements CategoriesEvent {
 }
 
 class RemoveCategory implements CategoriesEvent {
-  final CategoryEntity entity;
-  RemoveCategory(this.entity);
+  final int categoryId;
+  RemoveCategory(this.categoryId);
 }
 
 class RemoveCategories implements CategoriesEvent {
@@ -54,9 +54,9 @@ class RemoveCategories implements CategoriesEvent {
 }
 
 class EditCategory implements CategoriesEvent {
-  final CategoryEntity entity;
+  final int categoryId;
   final String newCategoryName;
-  EditCategory(this.entity, this.newCategoryName);
+  EditCategory(this.categoryId, this.newCategoryName);
 }
 
 ///Categories BLoC
@@ -73,9 +73,13 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
       (event, emitter) => switch (event) {
         FetchAllCategories() => _fetchAllCategories(emitter),
         AddCategory() => _insertCategory(emitter, event.categoryName),
-        RemoveCategory() => _removeCategory(emitter, event.entity),
-        EditCategory() =>
-          _editCategory(event, emitter, event.entity, event.newCategoryName),
+        RemoveCategory() => _removeCategory(emitter, event.categoryId),
+        EditCategory() => _editCategory(
+            event,
+            emitter,
+            event.categoryId,
+            event.newCategoryName,
+          ),
         MarkOnDelete() => _markOnDelete(event.categoryId, event.mark),
         RemoveCategories() => _removeCategories(emitter)
       },
@@ -117,11 +121,11 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
   Future<void> _removeCategory(
     Emitter<CategoriesState> emitter,
-    CategoryEntity entity,
+    int categoryId,
   ) async {
     try {
       emitter(CategoriesLoading());
-      await _categoriesRepository.removeCategory(entity);
+      await _categoriesRepository.removeCategory(categoryId);
       final categories = await _categoriesRepository.getAllCategories();
       return emitter(CategoriesFetched(categories));
     } on Object catch (error) {
@@ -160,12 +164,12 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   Future<void> _editCategory(
     CategoriesEvent event,
     Emitter<CategoriesState> emitter,
-    CategoryEntity entity,
+    int categoryId,
     String newCategoryName,
   ) async {
     try {
       emitter(CategoriesLoading());
-      await _categoriesRepository.updateCategory(entity, newCategoryName);
+      await _categoriesRepository.updateCategory(categoryId, newCategoryName);
       final categories = await _categoriesRepository.getAllCategories();
       return emitter(CategoriesFetched(categories));
     } on Object catch (error) {

@@ -13,13 +13,13 @@ abstract interface class CategoriesDataSource {
   Future<void> addCategory(CategoriesCompanion categoriesCompanion);
 
   /// Remove category from db
-  Future<void> removeCategory(CategoriesCompanion entry);
+  Future<void> removeCategory(int id);
 
   /// Remove categories from db
   Future<void> removeCategories(Iterable<int> entries);
 
   /// Remove category from db
-  Future<void> editCategory(CategoriesCompanion entry, String newCategoryName);
+  Future<void> editCategory(int id, String newCategoryName);
 }
 
 /// DAO categories
@@ -39,17 +39,19 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
       select(attachedDatabase.categories).get();
 
   @override
-  Future<void> removeCategory(CategoriesCompanion entry) async {
-    await delete(attachedDatabase.categories).delete(entry);
+  Future<void> removeCategory(int id) async {
+    await (delete(attachedDatabase.categories)
+      ..where((tbl) => tbl.id.isValue(id)))
+        .go();
   }
 
   @override
   Future<void> editCategory(
-    CategoriesCompanion entry,
+    int id,
     String newCategoryName,
   ) =>
       (update(attachedDatabase.categories)
-            ..where((tbl) => tbl.title.like(entry.title.value)))
+            ..where((tbl) => tbl.id.isValue(id)))
           .write(CategoriesCompanion(title: Value(newCategoryName)));
 
   @override

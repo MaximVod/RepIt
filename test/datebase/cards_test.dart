@@ -51,12 +51,12 @@ void main() {
         categoryId: 2,
       );
       await repository.addCard(
-          card
+          card,
       );
       final list = await repository.getCardsById(2);
       expect(list.length == 1, true);
       await repository.removeCategory(
-          1
+          1,
       );
       final refreshList = await repository.getCardsById(2);
       expect(refreshList.isEmpty, true);

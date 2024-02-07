@@ -111,7 +111,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                             onSelected: (value) {
                               if (value == CardAction.delete) {
                                 context.read<CategoriesBloc>().add(
-                                      RemoveCategory(widget.category),
+                                      RemoveCategory(widget.category.id),
                                     );
                               }
                               if (value == CardAction.edit) {
