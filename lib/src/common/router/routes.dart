@@ -8,6 +8,7 @@ import 'package:repit/src/feature/home/widget/home_screen.dart';
 enum Routes with OctopusRoute {
   /// Home Route
   home('home', title: 'Octopus'),
+
   /// Cards Route
   cards('cards', title: 'Cards');
 
@@ -25,6 +26,7 @@ enum Routes with OctopusRoute {
         Routes.home => const HomeScreen(),
         Routes.cards => CardsScreen(
             categoryName: node.arguments['category'] ?? "",
+            categoryId: node.extra['categoryId'] as int,
           ),
       };
 

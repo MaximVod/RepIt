@@ -1,16 +1,26 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repit/src/common/widget/error_state.dart';
 import 'package:repit/src/core/localization/localization.dart';
-import 'package:repit/src/feature/cards/model/card_entity.dart';
+import 'package:repit/src/feature/cards/bloc/cards_bloc.dart';
 import 'package:repit/src/feature/cards/widget/card_item.dart';
+import 'package:repit/src/feature/initialization/widget/dependencies_scope.dart';
 
 /// Screen to show cards by category
 class CardsScreen extends StatefulWidget {
   ///Name of category
   final String categoryName;
 
+  ///Id of category
+  final int categoryId;
+
   /// Create CardsScreen widget
-  const CardsScreen({required this.categoryName, super.key});
+  const CardsScreen({
+    required this.categoryName,
+    required this.categoryId,
+    super.key,
+  });
 
   @override
   State<CardsScreen> createState() => _CardsScreenState();
@@ -18,68 +28,103 @@ class CardsScreen extends StatefulWidget {
 
 class _CardsScreenState extends State<CardsScreen> {
   @override
-  Widget build(BuildContext context) {
-    final List<CardEntity> cards = [
-      const CardEntity(id: 1, key: "First", value: "Первый", categoryId: 2),
-      const CardEntity(id: 2, key: "Key", value: "Ключ", categoryId: 2),
-      const CardEntity(id: 3, key: "Value", value: "Значение", categoryId: 2),
-    ];
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.categoryName,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          centerTitle: true,
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            CarouselSlider.builder(
-              options: CarouselOptions(
-                height: 400,
-                enlargeCenterPage: true,
-                viewportFraction: 0.5,
-              ),
-              itemCount: cards.length,
-              itemBuilder: (
-                BuildContext context,
-                int itemIndex,
-                int pageViewIndex,
-              ) =>
-                  CardItem(card: cards[itemIndex]),
-            ),
-            FilledButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                  Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              onPressed: () => _showDialog(),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.add),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  Text(
-                    Localization.of(context).add_new_card,
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void initState() {
+    super.initState();
   }
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+        child: BlocProvider(
+          create: (context) => CardsBloc(
+            DependenciesScope.repositoriesOf(context).cardsRepository,
+          )..add(FetchCards(widget.categoryId)),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                widget.categoryName,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              centerTitle: true,
+            ),
+            body: BlocBuilder<CardsBloc, CardsState>(
+                builder: (context, state) => switch (state) {
+                      CardsIdle() => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      CardsLoading() => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      CardsFetched() => Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            if (state.cards.isNotEmpty)
+                              CarouselSlider.builder(
+                                options: CarouselOptions(
+                                  height: 400,
+                                  enlargeCenterPage: true,
+                                  viewportFraction: 0.5,
+                                ),
+                                itemCount: state.cards.length,
+                                itemBuilder: (
+                                  BuildContext context,
+                                  int itemIndex,
+                                  int pageViewIndex,
+                                ) =>
+                                    CardItem(card: state.cards[itemIndex]),
+                              )
+                            else
+                              Center(
+                                child: Text(
+                                  "Список категорий пуст."
+                                  " Пожалуйста добавтье категорию",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
+                                ),
+                              ),
+                            FilledButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                  Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
+                              onPressed: () => _showDialog(),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.add),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  Text(
+                                    Localization.of(context).add_new_card,
+                                    textAlign: TextAlign.start,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      CardsFailure() => ErrorState(
+                          errorText: state.error,
+                          onTryAgain: () => context
+                              .read<CardsBloc>()
+                              .add(FetchCards(widget.categoryId)),
+                        )
+                    }),
+          ),
+        ),
+      );
 
   Future<String?> _showDialog() async => showGeneralDialog<String>(
         context: context,

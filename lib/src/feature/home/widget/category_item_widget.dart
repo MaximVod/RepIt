@@ -79,10 +79,16 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
               left: widget.editMode ? 50 : 0,
             ),
             child: InkWell(
-              onTap: () => context.octopus.push(
-                Routes.cards,
-                arguments: {'category': widget.category.name},
-              ),
+              onTap: () {
+                context.octopus.setState(
+                  (state) => state
+                    ..add(
+                      Routes.cards.node(
+                        arguments: {'category': widget.category.name},
+                      )..extra["categoryId"] = widget.category.id,
+                    ),
+                );
+              },
               child: Card(
                 elevation: 0,
                 color: Theme.of(context).colorScheme.primary,
@@ -91,7 +97,9 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16,),
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
                       child: Row(
                         children: [
                           Text(

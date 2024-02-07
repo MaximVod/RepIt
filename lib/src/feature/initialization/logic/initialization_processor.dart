@@ -42,9 +42,10 @@ final class InitializationProcessor {
   }
 
   Future<Repositories> _initRepositories() async {
+    final appDatebase = AppDatabase();
     final categoriesRepository =
-        CategoriesRepositoryImpl(CategoriesDao(AppDatabase()));
-    final cardsRepository = CardsRepositoryImpl(CardsDao(AppDatabase()));
+        CategoriesRepositoryImpl(CategoriesDao(appDatebase));
+    final cardsRepository = CardsRepositoryImpl(CardsDao(appDatebase));
 
     return Repositories(
         categoriesRepository: categoriesRepository,

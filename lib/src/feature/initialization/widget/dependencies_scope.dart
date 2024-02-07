@@ -23,8 +23,12 @@ class DependenciesScope extends InheritedWidget {
   final Repositories repositories;
 
   /// Get the dependencies from the [context].
-  static Dependencies of(BuildContext context) =>
+  static Dependencies dependenciesOf(BuildContext context) =>
       context.inhOf<DependenciesScope>(listen: false).dependencies;
+
+  /// Get only the repositories from the [context].
+  static Repositories repositoriesOf(BuildContext context) =>
+      context.inhOf<DependenciesScope>(listen: false).repositories;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
