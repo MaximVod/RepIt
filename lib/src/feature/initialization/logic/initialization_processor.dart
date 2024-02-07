@@ -1,5 +1,7 @@
 import 'package:repit/src/core/components/database/database.dart';
 import 'package:repit/src/core/utils/logger.dart';
+import 'package:repit/src/feature/cards/data/cards_data_source.dart';
+import 'package:repit/src/feature/cards/data/cards_repository.dart';
 import 'package:repit/src/feature/home/data/categories_date_source.dart';
 import 'package:repit/src/feature/home/data/categories_repository.dart';
 import 'package:repit/src/feature/initialization/model/dependencies.dart';
@@ -25,7 +27,7 @@ final class InitializationProcessor {
   const InitializationProcessor({
     //required ExceptionTrackingManager trackingManager,
     required EnvironmentStore environmentStore,
-  })  : //_trackingManager = trackingManager,
+  }) : //_trackingManager = trackingManager,
         _environmentStore = environmentStore;
 
   Future<Dependencies> _initDependencies() async {
@@ -42,10 +44,11 @@ final class InitializationProcessor {
   Future<Repositories> _initRepositories() async {
     final categoriesRepository =
         CategoriesRepositoryImpl(CategoriesDao(AppDatabase()));
+    final cardsRepository = CardsRepositoryImpl(CardsDao(AppDatabase()));
 
     return Repositories(
-      categoriesRepository: categoriesRepository,
-    );
+        categoriesRepository: categoriesRepository,
+        cardsRepository: cardsRepository,);
   }
 
   Future<SettingsBloc> _initSettingsBloc(SharedPreferences prefs) async {
@@ -82,7 +85,7 @@ final class InitializationProcessor {
   /// (for example, caching or enabling tracking manager)
   Future<InitializationResult> initialize() async {
     if (_environmentStore.enableTrackingManager) {
-     // await _trackingManager.enableReporting();
+      // await _trackingManager.enableReporting();
     }
     final stopwatch = Stopwatch()..start();
 

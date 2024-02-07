@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/octopus.dart';
+import 'package:repit/src/common/router/routes.dart';
 import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/home/model/category_entity.dart';
-
-import '../../../common/router/routes.dart';
 
 ///Enum for category card
 enum CardAction {
@@ -54,6 +53,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
             child: SlideTransition(
               position: widget.animation,
               child: Checkbox(
+                checkColor: Theme.of(context).colorScheme.secondary,
                 value: checkedForDelete,
                 onChanged: (_) {
                   setState(() {
@@ -91,7 +91,7 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
+                          vertical: 8, horizontal: 16,),
                       child: Row(
                         children: [
                           Text(

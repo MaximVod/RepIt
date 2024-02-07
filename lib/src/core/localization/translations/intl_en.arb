@@ -12,5 +12,12 @@
     "edit_category_name": "Edit category name",
   "category_name_hint": "Enter category name",
   "ready": "Ready",
-  "edit": "Edit"
+  "edit": "Edit",
+
+
+  "add_new_card": "Add new card",
+  "create_new_card": "Create new card",
+  "card_name_hint": "Enter card name",
+  "card_value_hint": "Enter card value",
+  "create": "Create"
 }

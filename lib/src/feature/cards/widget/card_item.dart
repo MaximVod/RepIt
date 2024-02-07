@@ -3,10 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:repit/src/feature/cards/model/card_entity.dart';
 
+///Card for carousel
 class CardItem extends StatefulWidget {
+  ///Card entity
   final CardEntity card;
 
-  const CardItem({super.key, required this.card});
+  ///Card for carousel creating
+  const CardItem({required this.card, super.key});
 
   @override
   State<CardItem> createState() => _CardItemState();
@@ -20,8 +23,8 @@ class _CardItemState extends State<CardItem> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500),);
     _animation = Tween(end: 1.0, begin: 0.0).animate(_animationController)
       ..addListener(() {
         setState(() {});
@@ -49,18 +52,23 @@ class _CardItemState extends State<CardItem> with TickerProviderStateMixin {
             height: 200,
             width: 300,
             child: Card(
-              color: Theme.of(context).colorScheme.secondary,
+              color: _animation.value <= 0.5
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.secondary,
               child: Center(
                 child: _animation.value <= 0.5
+
+                    ///When the card is closed
                     ? Text(
                         widget.card.key,
                         textAlign: TextAlign.start,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                       )
+
+                    ///When the card is opened
                     : Transform.flip(
                         flipX: true,
                         child: Text(
@@ -70,7 +78,8 @@ class _CardItemState extends State<CardItem> with TickerProviderStateMixin {
                               .textTheme
                               .bodyLarge
                               ?.copyWith(
-                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                         ),
                       ),

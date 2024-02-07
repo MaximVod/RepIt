@@ -9,6 +9,7 @@ part 'card_entity.freezed.dart';
 class CardEntity with _$CardEntity {
   const factory CardEntity({
     required int id,
+    required int categoryId,
     required String key,
     required String value,
   }) = _CardEntity;

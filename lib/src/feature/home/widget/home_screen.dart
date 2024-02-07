@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  final ValueNotifier<bool> _name = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _editMode = ValueNotifier<bool>(false);
 
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 250),
@@ -35,13 +35,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _name.dispose();
+    _editMode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
-        valueListenable: _name,
+        valueListenable: _editMode,
         builder: (context, value, child) => SafeArea(
           child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               onPressed: () {
                 if (value) {
                   context.read<CategoriesBloc>().add(RemoveCategories());
-                  _name.value = false;
+                  _editMode.value = false;
                 } else {
                   _showDialog().then((dialogValue) {
                     if (dialogValue != null) {
@@ -76,11 +76,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   icon: const Icon(Icons.edit),
                   onPressed: () {
                     if (!value) {
-                      _name.value = true;
+                      _editMode.value = true;
                       //_name.value = true;
                       _controller.forward();
                     } else {
-                      _name.value = false;
+                      _editMode.value = false;
                       // _name.value = false;
                       _controller.reverse();
                     }
@@ -136,7 +136,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         )
                       : Center(
                           child: Text(
-                            "Список категорий пуст. Пожалуйста добавтье категорию",
+                            "Список категорий пуст."
+                            " Пожалуйста добавтье категорию",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
@@ -169,26 +170,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: child,
           ),
         ),
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            NewCategoryDialog(
+        pageBuilder: (context, animation, secondaryAnimation) => CategoryDialog(
           isNew: isNew,
         ),
       );
 }
 
 /// Dialog for create new Category
-class NewCategoryDialog extends StatefulWidget {
+class CategoryDialog extends StatefulWidget {
   /// {@macro sample_page}
-  const NewCategoryDialog({required this.isNew, super.key});
+  const CategoryDialog({required this.isNew, super.key});
 
   /// Flag for determine if dialog uses for new Category or edit
   final bool isNew;
 
   @override
-  State<NewCategoryDialog> createState() => _NewCategoryDialogState();
+  State<CategoryDialog> createState() => _CategoryDialogState();
 }
 
-class _NewCategoryDialogState extends State<NewCategoryDialog> {
+class _CategoryDialogState extends State<CategoryDialog> {
   /// TextField for category name
   final TextEditingController textEditingController = TextEditingController();
 
@@ -238,16 +238,22 @@ class _NewCategoryDialogState extends State<NewCategoryDialog> {
                     Localization.of(context).ready,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: validText
-                              ? Theme.of(context).cardColor
-                              : Theme.of(context).focusColor,
+                              ? Theme.of(context).colorScheme.secondary
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .secondary
+                                  .withOpacity(0.5),
                         ),
                   )
                 : Text(
                     Localization.of(context).edit,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: validText
-                              ? Theme.of(context).cardColor
-                              : Theme.of(context).focusColor,
+                              ? Theme.of(context).colorScheme.secondary
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .secondary
+                                  .withOpacity(0.5),
                         ),
                   ),
           ),

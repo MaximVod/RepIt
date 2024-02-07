@@ -21,21 +21,21 @@ abstract interface class CategoriesRepository {
   Future<void> updateCategory(CategoryEntity entity, String newCategoryName);
 }
 
-/// Implementation of CategoriesRepository
+/// Implementation of [CategoriesRepository]
 class CategoriesRepositoryImpl implements CategoriesRepository {
-  /// Date source instance
-  final CategoriesDataSource categoriesDataSource;
+  /// Date source instance of [CategoriesDataSource] for cards db
+  final CategoriesDataSource _categoriesDataSource;
 
   /// Constructor
-  CategoriesRepositoryImpl(this.categoriesDataSource);
+  CategoriesRepositoryImpl(this._categoriesDataSource);
 
   @override
-  Future<void> addCategory(String categoryName) async => categoriesDataSource
+  Future<void> addCategory(String categoryName) async => _categoriesDataSource
       .addCategory(CategoriesCompanion.insert(title: categoryName));
 
   @override
   Future<List<CategoryEntity>> getAllCategories() async {
-    final categories = await categoriesDataSource.getAllCategories();
+    final categories = await _categoriesDataSource.getAllCategories();
     return categories
         .map((dto) => CategoryEntity(id: dto.id, name: dto.title))
         .toList();
@@ -43,18 +43,18 @@ class CategoriesRepositoryImpl implements CategoriesRepository {
 
   @override
   Future<void> removeCategory(CategoryEntity entity) =>
-      categoriesDataSource.removeCategory(
+      _categoriesDataSource.removeCategory(
         CategoriesCompanion.insert(title: entity.name, id: Value(entity.id)),
       );
 
   @override
   Future<void> updateCategory(CategoryEntity entity, String newCategoryName) =>
-      categoriesDataSource.editCategory(
+      _categoriesDataSource.editCategory(
         CategoriesCompanion.insert(title: entity.name, id: Value(entity.id)),
         newCategoryName,
       );
 
   @override
   Future<void> removeCategories(Iterable<int> entries) =>
-      categoriesDataSource.removeCategories(entries);
+      _categoriesDataSource.removeCategories(entries);
 }
