@@ -49,6 +49,7 @@ class _CardItemState extends State<CardItem> with TickerProviderStateMixin {
             height: 200,
             width: 300,
             child: Card(
+              color: Theme.of(context).colorScheme.secondary,
               child: Center(
                 child: _animation.value <= 0.5
                     ? Text(

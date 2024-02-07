@@ -4,6 +4,8 @@ import 'package:repit/src/common/router/router_state_mixin.dart';
 import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/settings/widget/settings_scope.dart';
 
+import '../../../core/theme/color_scheme.dart';
+
 /// {@template material_context}
 /// [MaterialContext] is an entry point to the material context.
 ///
@@ -30,8 +32,8 @@ class _MaterialContextState extends State<MaterialContext>
 
     return MaterialApp.router(
       key: MaterialContext._globalKey,
-      theme: theme.lightTheme,
-      darkTheme: theme.darkTheme,
+      theme: lightThemeData,
+      darkTheme: darkThemeData,
       themeMode: theme.mode,
       localizationsDelegates: Localization.localizationDelegates,
       supportedLocales: Localization.supportedLocales,

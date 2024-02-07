@@ -91,6 +91,16 @@ flutter:
     # Add assets from the images directory to the application.
     - assets/images/
 
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: fonts/Inter-Black.ttf
+        - asset: fonts/Inter-Bold.ttf
+        - asset: fonts/Inter-ExtraBold.ttf
+        - asset: fonts/Inter-Medium.ttf
+          style: normal
+          weight: 600
+
 flutter_gen:
   output: lib/src/core/assets/generated
   line_length: 80

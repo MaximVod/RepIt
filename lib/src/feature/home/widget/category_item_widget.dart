@@ -79,27 +79,32 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
               left: widget.editMode ? 50 : 0,
             ),
             child: InkWell(
-              onTap: () => context.octopus.push(Routes.cards,
-                  arguments: {'category': widget.category.name},),
+              onTap: () => context.octopus.push(
+                Routes.cards,
+                arguments: {'category': widget.category.name},
+              ),
               child: Card(
                 elevation: 0,
-                color: Theme.of(context).colorScheme.secondaryContainer,
+                color: Theme.of(context).colorScheme.primary,
                 child: Center(
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
                       child: Row(
                         children: [
                           Text(
                             widget.category.name,
                             textAlign: TextAlign.start,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSecondaryContainer,
-                                    ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
                           ),
                           const Spacer(),
                           PopupMenuButton<CardAction>(
