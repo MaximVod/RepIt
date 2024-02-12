@@ -6,6 +6,7 @@ import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/cards/bloc/cards_bloc.dart';
 import 'package:repit/src/feature/cards/model/card_entity.dart';
 import 'package:repit/src/feature/cards/widget/card_item.dart';
+import 'package:repit/src/feature/cards/widget/card_list_item.dart';
 import 'package:repit/src/feature/initialization/widget/dependencies_scope.dart';
 
 /// Screen to show cards by category
@@ -27,11 +28,26 @@ class CardsScreen extends StatefulWidget {
   State<CardsScreen> createState() => _CardsScreenState();
 }
 
-class _CardsScreenState extends State<CardsScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class _CardsScreenState extends State<CardsScreen>
+    with TickerProviderStateMixin {
+  bool isListMode = false;
+
+  late final AnimationController _cardsController = AnimationController(
+    duration: const Duration(milliseconds: 500),
+    vsync: this,
+  )..forward();
+  late final Animation<double> _listAnimation = CurvedAnimation(
+    parent: _listController,
+    curve: Curves.easeIn,
+  );
+  late final AnimationController _listController = AnimationController(
+    duration: const Duration(milliseconds: 500),
+    vsync: this,
+  );
+  late final Animation<double> _cardsAnimation = CurvedAnimation(
+    parent: _cardsController,
+    curve: Curves.easeIn,
+  );
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -46,6 +62,22 @@ class _CardsScreenState extends State<CardsScreen> {
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               centerTitle: true,
+              actions: [
+                IconButton(
+                  onPressed: () => setState(() {
+                    if (isListMode) {
+                      isListMode = false;
+                      _cardsController.forward();
+                      _listController.reverse();
+                    } else {
+                      isListMode = true;
+                      _cardsController.reverse();
+                      _listController.forward();
+                    }
+                  }),
+                  icon: const Icon(Icons.list),
+                ),
+              ],
             ),
             body: BlocBuilder<CardsBloc, CardsState>(
               builder: (context, state) => switch (state) {
@@ -59,23 +91,60 @@ class _CardsScreenState extends State<CardsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       if (state.cards.isNotEmpty)
-                        CarouselSlider.builder(
-                          options: CarouselOptions(
-                            height: 400,
-                            enableInfiniteScroll:
-                                state.cards.length >= 4 ? true : false,
-                            enlargeCenterPage: true,
-                            viewportFraction: 0.5,
-                            pauseAutoPlayInFiniteScroll: true
-                          ),
-                          itemCount: state.cards.length,
-                          itemBuilder: (
-                            BuildContext context,
-                            int itemIndex,
-                            int pageViewIndex,
-                          ) =>
-                              CardItem(card: state.cards[itemIndex]),
-                        )
+                        !isListMode
+                            ? FadeTransition(
+                                opacity: _cardsAnimation,
+                                child: CarouselSlider.builder(
+                                  options: CarouselOptions(
+                                    height: 400,
+                                    enableInfiniteScroll:
+                                        state.cards.length >= 4 || false,
+                                    enlargeCenterPage: true,
+                                    viewportFraction: 0.5,
+                                    pauseAutoPlayInFiniteScroll: true,
+                                  ),
+                                  itemCount: state.cards.length,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int itemIndex,
+                                    int pageViewIndex,
+                                  ) =>
+                                      CardItem(card: state.cards[itemIndex]),
+                                ),
+                              )
+                            : Expanded(
+                                child: FadeTransition(
+                                  opacity: _listAnimation,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: CustomScrollView(
+                                      slivers: <Widget>[
+                                        /// Top padding
+                                        const SliverPadding(
+                                          padding: EdgeInsets.only(top: 16),
+                                        ),
+                                        // Catalog root categories
+                                        SliverList(
+                                          delegate: SliverChildBuilderDelegate(
+                                            (context, index) =>
+                                                CardListItemWidget(
+                                              card: state.cards[index],
+                                            ),
+                                            childCount: state.cards.length,
+                                          ),
+                                        ),
+
+                                        /// Bottom padding
+                                        const SliverPadding(
+                                          padding: EdgeInsets.only(bottom: 16),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
                       else
                         Center(
                           child: Text(
@@ -85,45 +154,48 @@ class _CardsScreenState extends State<CardsScreen> {
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
                         ),
-                      FilledButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).colorScheme.secondary,
+                      if (!isListMode)
+                        FilledButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                              Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                          onPressed: () => _showDialog().then((value) {
+                            if (value != null) {
+                              context.read<CardsBloc>().add(
+                                    AddCards(
+                                      CardEntity(
+                                        categoryId: widget.categoryId,
+                                        key: value[0],
+                                        value: value[1],
+                                      ),
+                                    ),
+                                  );
+                            }
+                          }),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.add),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                Localization.of(context).add_new_card,
+                                textAlign: TextAlign.start,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                              ),
+                            ],
                           ),
                         ),
-                        onPressed: () => _showDialog().then((value) {
-                          context.read<CardsBloc>().add(
-                                AddCards(
-                                  CardEntity(
-                                    categoryId: widget.categoryId,
-                                    key: value?[0] ?? "",
-                                    value: value?[1] ?? "",
-                                  ),
-                                ),
-                              );
-                        }),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.add),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              Localization.of(context).add_new_card,
-                              textAlign: TextAlign.start,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 CardsFailure() => ErrorState(
