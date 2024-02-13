@@ -26,7 +26,7 @@ enum Routes with OctopusRoute {
         Routes.home => const HomeScreen(),
         Routes.cards => CardsScreen(
             categoryName: node.arguments['category'] ?? "",
-            categoryId: node.extra['categoryId'] as int,
+            categoryId: node.extra['categoryId']! as int,
           ),
       };
 
