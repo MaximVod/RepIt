@@ -17,5 +17,5 @@ class Cards extends Table {
 
   /// Is card favorite.
   BoolColumn get isFavorite =>
-      boolean().withDefault(Variable<bool>(true))();
+      boolean().withDefault(const Variable<bool>(true))();
 }
