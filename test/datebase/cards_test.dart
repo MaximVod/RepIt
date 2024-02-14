@@ -61,5 +61,26 @@ void main() {
       final refreshList = await repository.getCardsById(2);
       expect(refreshList.isEmpty, true);
     });
+
+    test('Set card is favorite test', () async {
+      const card = CardEntity(
+        id: 1,
+        key: "First",
+        value: "Первый",
+        categoryId: 2,
+      );
+      await repository.addCard(
+        card,
+      );
+      var list = await repository.getCardsById(2);
+      expect(list.length == 1, true);
+      expect(list[0].isFavorite, false);
+      await repository.setFavoriteCard(1, isFavorite: true);
+      list = await repository.getCardsById(2);
+      expect(list[0].isFavorite, true);
+      await repository.setFavoriteCard(1, isFavorite: false);
+      list = await repository.getCardsById(2);
+      expect(list[0].isFavorite, false);
+    });
   });
 }

@@ -12,5 +12,6 @@ class CardEntity with _$CardEntity {
     required String key,
     required String value,
     @Default(0) int id,
+    @Default(false) bool isFavorite,
   }) = _CardEntity;
 }

@@ -44,6 +44,12 @@ class RemoveCard implements CardsEvent {
   RemoveCard(this.cardId);
 }
 
+class SetIsFavorite implements CardsEvent {
+  final int cardId;
+  final bool isFavorite;
+  SetIsFavorite(this.cardId, {required this.isFavorite});
+}
+
 ///Cards BLoC
 
 class CardsBloc extends Bloc<CardsEvent, CardsState> {
@@ -57,6 +63,11 @@ class CardsBloc extends Bloc<CardsEvent, CardsState> {
         FetchCards() => _fetchCards(emitter, event.categoryId),
         AddCards() => _addCard(emitter, event.card),
         RemoveCard() => _removeCard(emitter, event.cardId),
+        SetIsFavorite() => _setIsFavoriteCard(
+            emitter,
+            event.cardId,
+            isFavoriteCard: event.isFavorite,
+          )
       },
       transformer: bloc_concurrency.droppable(),
     );
@@ -99,6 +110,24 @@ class CardsBloc extends Bloc<CardsEvent, CardsState> {
     try {
       emitter(CardsLoading());
       await _cardsRepository.removeCard(cardId);
+    } on Object catch (error) {
+      emitter(
+        CardsFailure(error.toString()),
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> _setIsFavoriteCard(
+    Emitter<CardsState> emitter,
+    int cardId, {
+    required bool isFavoriteCard,
+  }) async {
+    try {
+      await _cardsRepository.setFavoriteCard(
+        cardId,
+        isFavorite: isFavoriteCard,
+      );
     } on Object catch (error) {
       emitter(
         CardsFailure(error.toString()),

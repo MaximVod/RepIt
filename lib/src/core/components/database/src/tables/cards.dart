@@ -16,5 +16,6 @@ class Cards extends Table {
   TextColumn get cardValue => text().withLength(min: 2, max: 50)();
 
   /// Is card favorite.
-  BoolColumn get isFavorite => boolean().withDefault(const Constant(false))();
+  BoolColumn get isFavorite =>
+      boolean().withDefault(Variable<bool>(true))();
 }

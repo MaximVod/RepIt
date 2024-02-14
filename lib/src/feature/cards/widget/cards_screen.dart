@@ -5,7 +5,7 @@ import 'package:repit/src/common/widget/error_state.dart';
 import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/cards/bloc/cards_bloc.dart';
 import 'package:repit/src/feature/cards/model/card_entity.dart';
-import 'package:repit/src/feature/cards/widget/card_item.dart';
+import 'package:repit/src/feature/cards/widget/card_carousel_item.dart';
 import 'package:repit/src/feature/cards/widget/card_list_item.dart';
 import 'package:repit/src/feature/initialization/widget/dependencies_scope.dart';
 

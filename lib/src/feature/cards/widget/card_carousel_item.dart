@@ -24,7 +24,9 @@ class _CardItemState extends State<CardItem> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500),);
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
     _animation = Tween(end: 1.0, begin: 0.0).animate(_animationController)
       ..addListener(() {
         setState(() {});

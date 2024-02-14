@@ -6,14 +6,17 @@ part 'cards_data_source.g.dart';
 
 /// Data source for cards
 abstract interface class CardsDataSource {
-  /// Get all categories
+  /// Get all card by category ID
   Future<List<Card>> getCardsByCategoryId(int categoryId);
 
-  /// Add category to db
+  /// Add card to db
   Future<void> createCard(CardsCompanion cardsCompanion);
 
-  /// Add category to db
+  /// Remove card to db
   Future<void> removeCard(int id);
+
+  /// Set card favorite or not
+  Future<void> setFavoriteCard(int cardId, {required bool isFavorite});
 }
 
 /// DAO categories
@@ -21,7 +24,6 @@ abstract interface class CardsDataSource {
 class CardsDao extends DatabaseAccessor<AppDatabase>
     with _$CardsDaoMixin
     implements CardsDataSource {
-
   /// Cards DAO constructor
   CardsDao(super.attachedDatabase);
 
@@ -31,8 +33,7 @@ class CardsDao extends DatabaseAccessor<AppDatabase>
 
   @override
   Future<void> removeCard(int id) async {
-   await (delete(attachedDatabase.cards)
-      ..where((tbl) => tbl.id.isValue(id)))
+    await (delete(attachedDatabase.cards)..where((tbl) => tbl.id.isValue(id)))
         .go();
   }
 
@@ -41,4 +42,9 @@ class CardsDao extends DatabaseAccessor<AppDatabase>
       (select(attachedDatabase.cards)
             ..where((tbl) => tbl.categoryId.isValue(categoryId)))
           .get();
+
+  @override
+  Future<void> setFavoriteCard(int cardId, {required bool isFavorite}) async =>
+      (update(attachedDatabase.cards)..where((tbl) => tbl.id.isValue(cardId)))
+          .write(CardsCompanion(isFavorite: Value(isFavorite)));
 }

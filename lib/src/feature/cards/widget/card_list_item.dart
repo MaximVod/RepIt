@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:repit/src/core/localization/localization.dart';
+import 'package:repit/src/feature/cards/bloc/cards_bloc.dart';
 import 'package:repit/src/feature/cards/model/card_entity.dart';
-
-import '../../../core/localization/localization.dart';
-import '../../home/widget/category_item_widget.dart';
+import 'package:repit/src/feature/home/widget/category_item_widget.dart';
 
 ///Widget of card in list
-class CardListItemWidget extends StatelessWidget {
+class CardListItemWidget extends StatefulWidget {
   ///Card entity
   final CardEntity card;
 
   ///Card item list constructor
   const CardListItemWidget({required this.card, super.key});
+
+  @override
+  State<CardListItemWidget> createState() => _CardListItemWidgetState();
+}
+
+class _CardListItemWidgetState extends State<CardListItemWidget> {
+  bool _isFavorite = false;
+
+  @override
+  void initState() {
+    _isFavorite = widget.card.isFavorite;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) => Card(
@@ -31,7 +45,7 @@ class CardListItemWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        card.key,
+                        widget.card.key,
                         textAlign: TextAlign.start,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w600,
@@ -42,7 +56,7 @@ class CardListItemWidget extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        card.value,
+                        widget.card.value,
                         textAlign: TextAlign.start,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w600,
@@ -53,8 +67,18 @@ class CardListItemWidget extends StatelessWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.favorite_border),
+                    onPressed: () => setState(() {
+                      _isFavorite = !_isFavorite;
+                      context.read<CardsBloc>().add(
+                            SetIsFavorite(
+                              widget.card.id,
+                              isFavorite: _isFavorite,
+                            ),
+                          );
+                    }),
+                    icon: _isFavorite
+                        ? const Icon(Icons.favorite)
+                        : const Icon(Icons.favorite_border),
                   ),
                   PopupMenuButton<CardAction>(
                     onSelected: (value) {
