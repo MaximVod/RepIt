@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:repit/src/feature/cards/model/card_entity.dart';
 
+import '../../../core/localization/localization.dart';
+import '../../home/widget/category_item_widget.dart';
+
 ///Widget of card in list
 class CardListItemWidget extends StatelessWidget {
   ///Card entity
@@ -21,10 +24,11 @@ class CardListItemWidget extends StatelessWidget {
                 vertical: 8,
                 horizontal: 16,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         card.key,
@@ -34,42 +38,46 @@ class CardListItemWidget extends StatelessWidget {
                               color: Theme.of(context).colorScheme.secondary,
                             ),
                       ),
-                      const Spacer(),
-                      // PopupMenuButton<CardAction>(
-                      //   onSelected: (value) {
-                      //     if (value == CardAction.delete) {
-                      //       context.read<CategoriesBloc>().add(
-                      //             RemoveCategory(widget.category.id),
-                      //           );
-                      //     }
-                      //     if (value == CardAction.edit) {
-                      //       widget.onEdit();
-                      //     }
-                      //   },
-                      //   itemBuilder: (BuildContext context) =>
-                      //       <PopupMenuEntry<CardAction>>[
-                      //     const PopupMenuItem<CardAction>(
-                      //       value: CardAction.edit,
-                      //       child: Text('Edit'),
-                      //     ),
-                      //     const PopupMenuItem<CardAction>(
-                      //       value: CardAction.delete,
-                      //       child: Text('Delete'),
-                      //     ),
-                      //   ],
-                      // ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        card.value,
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 10,
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.favorite_border),
                   ),
-                  Text(
-                    card.value,
-                    textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                  PopupMenuButton<CardAction>(
+                    onSelected: (value) {
+                      // if (value == CardAction.delete) {
+                      //   context.read<CategoriesBloc>().add(
+                      //     RemoveCategory(widget.category.id),
+                      //   );
+                      // }
+                      // if (value == CardAction.edit) {
+                      //   widget.onEdit();
+                      // }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<CardAction>>[
+                      PopupMenuItem<CardAction>(
+                        value: CardAction.edit,
+                        child: Text(Localization.of(context).edit),
+                      ),
+                      PopupMenuItem<CardAction>(
+                        value: CardAction.delete,
+                        child: Text(Localization.of(context).delete),
+                      ),
+                    ],
                   ),
                 ],
               ),

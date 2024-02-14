@@ -13,6 +13,7 @@
   "category_name_hint": "Enter category name",
   "ready": "Ready",
   "edit": "Edit",
+  "delete": "Delete",
 
 
   "add_new_card": "Add new card",

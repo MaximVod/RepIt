@@ -56,6 +56,7 @@ class _CardsScreenState extends State<CardsScreen>
             DependenciesScope.repositoriesOf(context).cardsRepository,
           )..add(FetchCards(widget.categoryId)),
           child: Scaffold(
+            //TODO FAB for list state
             appBar: AppBar(
               title: Text(
                 widget.categoryName,
@@ -75,7 +76,9 @@ class _CardsScreenState extends State<CardsScreen>
                       _listController.forward();
                     }
                   }),
-                  icon: const Icon(Icons.list),
+                  icon: isListMode
+                      ? const Icon(Icons.description_outlined)
+                      : const Icon(Icons.list),
                 ),
               ],
             ),
@@ -148,6 +151,7 @@ class _CardsScreenState extends State<CardsScreen>
                       else
                         Center(
                           child: Text(
+                            //TODO Localize this text
                             "Список категорий пуст."
                             " Пожалуйста добавтье категорию",
                             textAlign: TextAlign.center,
@@ -155,45 +159,49 @@ class _CardsScreenState extends State<CardsScreen>
                           ),
                         ),
                       if (!isListMode)
-                        FilledButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                              Theme.of(context).colorScheme.secondary,
+                        FadeTransition(
+                          opacity: _cardsAnimation,
+                          child: FilledButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                Theme.of(context).colorScheme.secondary,
+                              ),
                             ),
-                          ),
-                          onPressed: () => _showDialog().then((value) {
-                            if (value != null) {
-                              context.read<CardsBloc>().add(
-                                    AddCards(
-                                      CardEntity(
-                                        categoryId: widget.categoryId,
-                                        key: value[0],
-                                        value: value[1],
+                            onPressed: () => _showDialog().then((value) {
+                              if (value != null) {
+                                context.read<CardsBloc>().add(
+                                      AddCards(
+                                        CardEntity(
+                                          categoryId: widget.categoryId,
+                                          key: value[0],
+                                          value: value[1],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                            }
-                          }),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.add),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                              Text(
-                                Localization.of(context).add_new_card,
-                                textAlign: TextAlign.start,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                              ),
-                            ],
+                                    );
+                              }
+                            }),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.add),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                Text(
+                                  Localization.of(context).add_new_card,
+                                  textAlign: TextAlign.start,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                     ],

@@ -5,6 +5,8 @@ import 'package:repit/src/common/router/routes.dart';
 import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/home/model/category_entity.dart';
 
+import '../../../core/localization/localization.dart';
+
 ///Enum for category card
 enum CardAction {
   /// Edit category
@@ -128,13 +130,13 @@ class _CategoryItemWidgetState extends State<CategoryItemWidget> {
                             },
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry<CardAction>>[
-                              const PopupMenuItem<CardAction>(
+                               PopupMenuItem<CardAction>(
                                 value: CardAction.edit,
-                                child: Text('Edit'),
+                                child: Text(Localization.of(context).edit),
                               ),
-                              const PopupMenuItem<CardAction>(
+                               PopupMenuItem<CardAction>(
                                 value: CardAction.delete,
-                                child: Text('Delete'),
+                                child: Text(Localization.of(context).delete),
                               ),
                             ],
                           ),
