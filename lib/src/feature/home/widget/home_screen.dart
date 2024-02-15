@@ -136,8 +136,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         )
                       : Center(
                           child: Text(
-                            "Список категорий пуст."
-                            " Пожалуйста добавтье категорию",
+                            Localization.of(context).empty_categories,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),

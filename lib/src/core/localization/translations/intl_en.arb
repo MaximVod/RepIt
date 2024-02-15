@@ -20,5 +20,8 @@
   "create_new_card": "Create new card",
   "card_name_hint": "Enter card name",
   "card_value_hint": "Enter card value",
-  "create": "Create"
+  "create": "Create",
+
+  "empty_categories": "The list of categories is empty please add a category",
+  "empty_cards": "The list of cards is empty please add a category"
 }

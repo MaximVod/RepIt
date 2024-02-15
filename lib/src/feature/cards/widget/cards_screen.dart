@@ -28,26 +28,8 @@ class CardsScreen extends StatefulWidget {
   State<CardsScreen> createState() => _CardsScreenState();
 }
 
-class _CardsScreenState extends State<CardsScreen>
-    with TickerProviderStateMixin {
+class _CardsScreenState extends State<CardsScreen>{
   bool isListMode = false;
-
-  late final AnimationController _cardsController = AnimationController(
-    duration: const Duration(milliseconds: 500),
-    vsync: this,
-  )..forward();
-  late final Animation<double> _listAnimation = CurvedAnimation(
-    parent: _listController,
-    curve: Curves.easeIn,
-  );
-  late final AnimationController _listController = AnimationController(
-    duration: const Duration(milliseconds: 500),
-    vsync: this,
-  );
-  late final Animation<double> _cardsAnimation = CurvedAnimation(
-    parent: _cardsController,
-    curve: Curves.easeIn,
-  );
 
   @override
   Widget build(BuildContext context) => SafeArea(
@@ -66,19 +48,11 @@ class _CardsScreenState extends State<CardsScreen>
               actions: [
                 IconButton(
                   onPressed: () => setState(() {
-                    if (isListMode) {
-                      isListMode = false;
-                      _cardsController.forward();
-                      _listController.reverse();
-                    } else {
-                      isListMode = true;
-                      _cardsController.reverse();
-                      _listController.forward();
-                    }
+                    isListMode = !isListMode;
                   }),
-                  icon: isListMode
-                      ? const Icon(Icons.description_outlined)
-                      : const Icon(Icons.list),
+                  icon: Icon(
+                    isListMode ? Icons.description_outlined : Icons.list,
+                  ),
                 ),
               ],
             ),
@@ -91,119 +65,126 @@ class _CardsScreenState extends State<CardsScreen>
                     child: CircularProgressIndicator(),
                   ),
                 CardsFetched() => Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (state.cards.isNotEmpty)
-                        !isListMode
-                            ? FadeTransition(
-                                opacity: _cardsAnimation,
-                                child: CarouselSlider.builder(
-                                  options: CarouselOptions(
-                                    height: 400,
-                                    enableInfiniteScroll:
-                                        state.cards.length >= 4 || false,
-                                    enlargeCenterPage: true,
-                                    viewportFraction: 0.5,
-                                    pauseAutoPlayInFiniteScroll: true,
-                                  ),
-                                  itemCount: state.cards.length,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int itemIndex,
-                                    int pageViewIndex,
-                                  ) =>
-                                      CardItem(card: state.cards[itemIndex]),
-                                ),
-                              )
-                            : Expanded(
-                                child: FadeTransition(
-                                  opacity: _listAnimation,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    child: CustomScrollView(
-                                      slivers: <Widget>[
-                                        /// Top padding
-                                        const SliverPadding(
-                                          padding: EdgeInsets.only(top: 16),
-                                        ),
-                                        // Catalog root categories
-                                        SliverList(
-                                          delegate: SliverChildBuilderDelegate(
-                                            (context, index) =>
-                                                CardListItemWidget(
-                                              card: state.cards[index],
-                                            ),
-                                            childCount: state.cards.length,
-                                          ),
-                                        ),
-
-                                        /// Bottom padding
-                                        const SliverPadding(
-                                          padding: EdgeInsets.only(bottom: 16),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                      else
-                        Center(
-                          child: Text(
-                            //TODO Localize this text
-                            "Список категорий пуст."
-                            " Пожалуйста добавтье категорию",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                        ),
-                      if (!isListMode)
-                        FadeTransition(
-                          opacity: _cardsAnimation,
-                          child: FilledButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                Theme.of(context).colorScheme.secondary,
+                      Expanded(
+                        child: AnimatedCrossFade(
+                          layoutBuilder: (
+                            Widget topChild,
+                            Key topChildKey,
+                            Widget bottomChild,
+                            Key bottomChildKey,
+                          ) =>
+                              Stack(
+                            clipBehavior: Clip.none,
+                            children: <Widget>[
+                              Positioned(
+                                key: bottomChildKey,
+                                left: 0.0,
+                                top: 0.0,
+                                right: 0.0,
+                                bottom: 0.0,
+                                child: bottomChild,
                               ),
-                            ),
-                            onPressed: () => _showDialog().then((value) {
-                              if (value != null) {
-                                context.read<CardsBloc>().add(
-                                      AddCards(
-                                        CardEntity(
-                                          categoryId: widget.categoryId,
-                                          key: value[0],
-                                          value: value[1],
-                                        ),
-                                      ),
-                                    );
-                              }
-                            }),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.add),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Text(
-                                  Localization.of(context).add_new_card,
-                                  textAlign: TextAlign.start,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                ),
-                              ],
-                            ),
+                              Positioned(
+                                key: topChildKey,
+                                child: topChild,
+                              ),
+                            ],
                           ),
+                          duration: const Duration(milliseconds: 300),
+                          firstChild: CustomScrollView(
+                            shrinkWrap: true,
+                            slivers: <Widget>[
+                              /// Top padding
+                              const SliverPadding(
+                                padding: EdgeInsets.only(top: 16),
+                              ),
+                              // Catalog root categories
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) => CardListItemWidget(
+                                    card: state.cards[index],
+                                  ),
+                                  childCount: state.cards.length,
+                                ),
+                              ),
+
+                              /// Bottom padding
+                              const SliverPadding(
+                                padding: EdgeInsets.only(bottom: 16),
+                              ),
+                            ],
+                          ),
+                          secondChild: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CarouselSlider.builder(
+                                options: CarouselOptions(
+                                  height: 400,
+                                  enableInfiniteScroll:
+                                      state.cards.length >= 4 || false,
+                                  enlargeCenterPage: true,
+                                  viewportFraction: 0.5,
+                                  pauseAutoPlayInFiniteScroll: true,
+                                ),
+                                itemCount: state.cards.length,
+                                itemBuilder: (
+                                  BuildContext context,
+                                  int itemIndex,
+                                  int pageViewIndex,
+                                ) =>
+                                    CardItem(card: state.cards[itemIndex]),
+                              ),
+                              FilledButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                    Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
+                                onPressed: () => _showDialog().then((value) {
+                                  if (value != null) {
+                                    context.read<CardsBloc>().add(
+                                          AddCards(
+                                            CardEntity(
+                                              categoryId: widget.categoryId,
+                                              key: value[0],
+                                              value: value[1],
+                                            ),
+                                          ),
+                                        );
+                                  }
+                                }),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.add),
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                    Text(
+                                      Localization.of(context).add_new_card,
+                                      textAlign: TextAlign.start,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          crossFadeState: isListMode
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
                         ),
+                      ),
                     ],
                   ),
                 CardsFailure() => ErrorState(
