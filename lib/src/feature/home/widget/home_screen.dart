@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:octopus/octopus.dart';
 import 'package:repit/src/core/localization/localization.dart';
-import 'package:repit/src/feature/categories/widget/home_screen.dart';
+import 'package:repit/src/feature/categories/widget/categories_screen.dart';
 import 'package:repit/src/feature/favorites/widget/favorites_tab.dart';
 import 'package:repit/src/feature/settings/widget/settings_tab.dart';
 
@@ -47,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) => Scaffold(
         body: IndexedStack(
           index: _tab.index,
-          children: const [CategoriesTab(), FavoritesTab(), SettingsTab()],
+          children:  [const CategoriesTab(), const FavoritesTab(), SettingsTab()],
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[

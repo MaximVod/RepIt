@@ -27,5 +27,8 @@
 
   "categories": "Категории",
   "favorites": "Любимые",
-  "settings": "Настройки"
+  "settings": "Настройки",
+
+  "app_theme" : "Тема приложения",
+  "language" : "Язык"
 }

@@ -27,6 +27,9 @@
 
   "categories": "Categories",
   "favorites": "Favorites",
-  "settings": "Settings"
+  "settings": "Settings",
+
+  "app_theme" : "Application theme",
+  "language" : "Language"
 
 }

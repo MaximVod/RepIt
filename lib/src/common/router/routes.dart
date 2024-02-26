@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/octopus.dart';
 import 'package:repit/src/feature/cards/widget/cards_screen.dart';
-import 'package:repit/src/feature/categories/widget/home_screen.dart';
+import 'package:repit/src/feature/categories/widget/categories_screen.dart';
 import 'package:repit/src/feature/home/widget/home_screen.dart';
 
 /// Routes for Octopus Navigator
