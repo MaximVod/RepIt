@@ -23,5 +23,10 @@
   "create": "Create",
 
   "empty_categories": "The list of categories is empty please add a category",
-  "empty_cards": "The list of cards is empty please add a category"
+  "empty_cards": "The list of cards is empty please add a category",
+
+  "categories": "Categories",
+  "favorites": "Favorites",
+  "settings": "Settings"
+
 }

@@ -7,17 +7,18 @@ import 'package:repit/src/feature/categories/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/categories/widget/category_item_widget.dart';
 
 /// {@template sample_page}
-/// SamplePage widget
+/// Categories Tab
 /// {@endtemplate}
-class HomeScreen extends StatefulWidget {
+class CategoriesTab extends StatefulWidget {
   /// {@macro sample_page}
-  const HomeScreen({super.key});
+  const CategoriesTab({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<CategoriesTab> createState() => _CategoriesTabState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _CategoriesTabState extends State<CategoriesTab>
+    with TickerProviderStateMixin {
   final ValueNotifier<bool> _editMode = ValueNotifier<bool>(false);
 
   late final AnimationController _controller = AnimationController(
