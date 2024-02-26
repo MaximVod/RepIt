@@ -2,8 +2,8 @@ import 'package:repit/src/core/components/database/database.dart';
 import 'package:repit/src/core/utils/logger.dart';
 import 'package:repit/src/feature/cards/data/cards_data_source.dart';
 import 'package:repit/src/feature/cards/data/cards_repository.dart';
-import 'package:repit/src/feature/home/data/categories_date_source.dart';
-import 'package:repit/src/feature/home/data/categories_repository.dart';
+import 'package:repit/src/feature/categories/data/categories_date_source.dart';
+import 'package:repit/src/feature/categories/data/categories_repository.dart';
 import 'package:repit/src/feature/initialization/model/dependencies.dart';
 import 'package:repit/src/feature/initialization/model/environment_store.dart';
 import 'package:repit/src/feature/settings/bloc/settings_bloc.dart';
@@ -48,8 +48,9 @@ final class InitializationProcessor {
     final cardsRepository = CardsRepositoryImpl(CardsDao(appDatebase));
 
     return Repositories(
-        categoriesRepository: categoriesRepository,
-        cardsRepository: cardsRepository,);
+      categoriesRepository: categoriesRepository,
+      cardsRepository: cardsRepository,
+    );
   }
 
   Future<SettingsBloc> _initSettingsBloc(SharedPreferences prefs) async {

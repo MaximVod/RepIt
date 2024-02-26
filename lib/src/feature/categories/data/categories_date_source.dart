@@ -41,7 +41,7 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
   @override
   Future<void> removeCategory(int id) async {
     await (delete(attachedDatabase.categories)
-      ..where((tbl) => tbl.id.isValue(id)))
+          ..where((tbl) => tbl.id.isValue(id)))
         .go();
   }
 
@@ -50,8 +50,7 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
     int id,
     String newCategoryName,
   ) =>
-      (update(attachedDatabase.categories)
-            ..where((tbl) => tbl.id.isValue(id)))
+      (update(attachedDatabase.categories)..where((tbl) => tbl.id.isValue(id)))
           .write(CategoriesCompanion(title: Value(newCategoryName)));
 
   @override

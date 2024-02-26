@@ -3,9 +3,9 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:repit/src/core/components/database/src/app_database.dart';
-import 'package:repit/src/feature/home/data/categories_date_source.dart';
-import 'package:repit/src/feature/home/data/categories_repository.dart';
-import 'package:repit/src/feature/home/model/category_entity.dart';
+import 'package:repit/src/feature/categories/data/categories_date_source.dart';
+import 'package:repit/src/feature/categories/data/categories_repository.dart';
+import 'package:repit/src/feature/categories/model/category_entity.dart';
 
 const String firstCategory = "firstCategory";
 const String secondCategory = "secondCategory";

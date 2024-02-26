@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repit/src/common/widget/error_state.dart';
 import 'package:repit/src/core/localization/localization.dart';
-import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
-import 'package:repit/src/feature/home/widget/category_item_widget.dart';
+
+import 'package:repit/src/feature/categories/bloc/categories_bloc.dart';
+import 'package:repit/src/feature/categories/widget/category_item_widget.dart';
 
 /// {@template sample_page}
 /// SamplePage widget

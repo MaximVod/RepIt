@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/cards/bloc/cards_bloc.dart';
 import 'package:repit/src/feature/cards/model/card_entity.dart';
-import 'package:repit/src/feature/home/widget/category_item_widget.dart';
+import 'package:repit/src/feature/categories/widget/category_item_widget.dart';
 
 ///Widget of card in list
 class CardListItemWidget extends StatefulWidget {

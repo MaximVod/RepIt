@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:repit/src/feature/app/widget/material_context.dart';
-import 'package:repit/src/feature/home/bloc/categories_bloc.dart';
+import 'package:repit/src/feature/categories/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/initialization/logic/initialization_processor.dart';
 import 'package:repit/src/feature/initialization/model/dependencies.dart';
 import 'package:repit/src/feature/initialization/widget/dependencies_scope.dart';

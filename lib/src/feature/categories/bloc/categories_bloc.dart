@@ -2,8 +2,9 @@
 
 import 'package:bloc_concurrency/bloc_concurrency.dart' as bloc_concurrency;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:repit/src/feature/home/data/categories_repository.dart';
-import 'package:repit/src/feature/home/model/category_entity.dart';
+
+import 'package:repit/src/feature/categories/data/categories_repository.dart';
+import 'package:repit/src/feature/categories/model/category_entity.dart';
 
 ///States for logic with categories
 sealed class CategoriesState {}

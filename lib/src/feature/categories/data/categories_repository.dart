@@ -1,6 +1,6 @@
 import 'package:repit/src/core/components/database/database.dart';
-import 'package:repit/src/feature/home/data/categories_date_source.dart';
-import 'package:repit/src/feature/home/model/category_entity.dart';
+import 'package:repit/src/feature/categories/data/categories_date_source.dart';
+import 'package:repit/src/feature/categories/model/category_entity.dart';
 
 /// Repository interface for cards categories
 abstract interface class CategoriesRepository {

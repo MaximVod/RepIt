@@ -1,5 +1,5 @@
 import 'package:repit/src/feature/cards/data/cards_repository.dart';
-import 'package:repit/src/feature/home/data/categories_repository.dart';
+import 'package:repit/src/feature/categories/data/categories_repository.dart';
 import 'package:repit/src/feature/settings/bloc/settings_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,9 +32,9 @@ base class Repositories {
 
   /// [CategoriesRepository] instance
   final CategoriesRepository categoriesRepository;
+
   /// [CardsRepository] instance
   final CardsRepository cardsRepository;
-
 }
 
 /// {@template initialization_result}
