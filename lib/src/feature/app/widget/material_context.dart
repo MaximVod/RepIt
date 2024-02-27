@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:octopus/octopus.dart';
 import 'package:repit/src/common/router/router_state_mixin.dart';
 import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/core/theme/color_scheme.dart';
@@ -41,7 +40,7 @@ class _MaterialContextState extends State<MaterialContext>
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         minScaleFactor: 1.0,
         maxScaleFactor: 2.0,
-        child: OctopusTools(octopus: router, child: child ?? const SizedBox()),
+        child: child ?? const SizedBox(),
       ),
     );
   }
