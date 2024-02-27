@@ -5,6 +5,7 @@ import 'package:repit/src/core/localization/localization.dart';
 
 import 'package:repit/src/feature/categories/bloc/categories_bloc.dart';
 import 'package:repit/src/feature/categories/widget/category_item_widget.dart';
+import 'package:repit/src/feature/initialization/widget/dependencies_scope.dart';
 
 /// {@template sample_page}
 /// Categories Tab
@@ -44,112 +45,120 @@ class _CategoriesTabState extends State<CategoriesTab>
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
         valueListenable: _editMode,
-        builder: (context, value, child) => SafeArea(
-          child: Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-              enableFeedback: false,
-              elevation: 0,
-              onPressed: () {
-                if (value) {
-                  context.read<CategoriesBloc>().add(RemoveCategories());
-                  _editMode.value = false;
-                } else {
-                  _showDialog().then((dialogValue) {
-                    if (dialogValue != null) {
-                      context
-                          .read<CategoriesBloc>()
-                          .add(AddCategory(dialogValue));
-                    }
-                  });
-                }
-              },
-              child: Icon(value ? Icons.delete : Icons.add),
+        builder: (context, value, child) => BlocProvider(
+          create: (context) => CategoriesBloc(
+            DependenciesScope.repositoriesOf(context).categoriesRepository,
+          )..add(
+              FetchAllCategories(),
             ),
-            appBar: AppBar(
-              title: Text(
-                Localization.of(context).categories_card,
-                style: Theme.of(context).textTheme.titleSmall,
+          child: SafeArea(
+            child: Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              floatingActionButton: FloatingActionButton(
+                backgroundColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
+                enableFeedback: false,
+                elevation: 0,
+                onPressed: () {
+                  if (value) {
+                    context.read<CategoriesBloc>().add(RemoveCategories());
+                    _editMode.value = false;
+                  } else {
+                    _showDialog().then((dialogValue) {
+                      if (dialogValue != null) {
+                        context
+                            .read<CategoriesBloc>()
+                            .add(AddCategory(dialogValue));
+                      }
+                    });
+                  }
+                },
+                child: Icon(value ? Icons.delete : Icons.add),
               ),
-              centerTitle: true,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    if (!value) {
-                      _editMode.value = true;
-                      //_name.value = true;
-                      _controller.forward();
-                    } else {
-                      _editMode.value = false;
-                      // _name.value = false;
-                      _controller.reverse();
-                    }
+              appBar: AppBar(
+                title: Text(
+                  Localization.of(context).categories_card,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      if (!value) {
+                        _editMode.value = true;
+                        //_name.value = true;
+                        _controller.forward();
+                      } else {
+                        _editMode.value = false;
+                        // _name.value = false;
+                        _controller.reverse();
+                      }
+                    },
+                  ),
+                ],
+              ),
+              body: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: BlocBuilder<CategoriesBloc, CategoriesState>(
+                  builder: (context, state) => switch (state) {
+                    CategoriesIdle() => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    CategoriesLoading() => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    CategoriesFetched() => state.categories.isNotEmpty
+                        ? CustomScrollView(
+                            slivers: <Widget>[
+                              /// Top padding
+                              const SliverPadding(
+                                padding: EdgeInsets.only(top: 16),
+                              ),
+                              // Catalog root categories
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) => CategoryItemWidget(
+                                    editMode: value,
+                                    category: state.categories[index],
+                                    animation: _offsetAnimation,
+                                    onEdit: () => _showDialog(isNew: false)
+                                        .then((dialogValue) {
+                                      if (dialogValue != null) {
+                                        context.read<CategoriesBloc>().add(
+                                              EditCategory(
+                                                state.categories[index].id,
+                                                dialogValue,
+                                              ),
+                                            );
+                                      }
+                                    }),
+                                  ),
+                                  childCount: state.categories.length,
+                                ),
+                              ),
+
+                              /// Bottom padding
+                              const SliverPadding(
+                                padding: EdgeInsets.only(bottom: 16),
+                              ),
+                            ],
+                          )
+                        : Center(
+                            child: Text(
+                              Localization.of(context).empty_categories,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                          ),
+                    CategoriesFailure() => ErrorState(
+                        errorText: state.error,
+                        onTryAgain: () => context
+                            .read<CategoriesBloc>()
+                            .add(FetchAllCategories()),
+                      )
                   },
                 ),
-              ],
-            ),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: BlocBuilder<CategoriesBloc, CategoriesState>(
-                builder: (context, state) => switch (state) {
-                  CategoriesIdle() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  CategoriesLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  CategoriesFetched() => state.categories.isNotEmpty
-                      ? CustomScrollView(
-                          slivers: <Widget>[
-                            /// Top padding
-                            const SliverPadding(
-                              padding: EdgeInsets.only(top: 16),
-                            ),
-                            // Catalog root categories
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) => CategoryItemWidget(
-                                  editMode: value,
-                                  category: state.categories[index],
-                                  animation: _offsetAnimation,
-                                  onEdit: () => _showDialog(isNew: false)
-                                      .then((dialogValue) {
-                                    if (dialogValue != null) {
-                                      context.read<CategoriesBloc>().add(
-                                            EditCategory(
-                                              state.categories[index].id,
-                                              dialogValue,
-                                            ),
-                                          );
-                                    }
-                                  }),
-                                ),
-                                childCount: state.categories.length,
-                              ),
-                            ),
-
-                            /// Bottom padding
-                            const SliverPadding(
-                              padding: EdgeInsets.only(bottom: 16),
-                            ),
-                          ],
-                        )
-                      : Center(
-                          child: Text(
-                            Localization.of(context).empty_categories,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                        ),
-                  CategoriesFailure() => ErrorState(
-                      errorText: state.error,
-                      onTryAgain: () => context
-                          .read<CategoriesBloc>()
-                          .add(FetchAllCategories()),
-                    )
-                },
               ),
             ),
           ),
