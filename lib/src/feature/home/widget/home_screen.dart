@@ -46,7 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) => Scaffold(
         body: IndexedStack(
           index: _tab.index,
-          children:  [const CategoriesTab(), const FavoritesTab(), SettingsTab()],
+          children: [
+            const CategoriesTab(),
+            const FavoritesTab(),
+            SettingsTab(),
+          ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[

@@ -28,174 +28,176 @@ class CardsScreen extends StatefulWidget {
   State<CardsScreen> createState() => _CardsScreenState();
 }
 
-class _CardsScreenState extends State<CardsScreen>{
+class _CardsScreenState extends State<CardsScreen> {
   bool isListMode = false;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => CardsBloc(
-      DependenciesScope.repositoriesOf(context).cardsRepository,
-    )..add(FetchCards(widget.categoryId)),
-    child: Scaffold(
-      //TODO FAB for list state
-      appBar: AppBar(
-        title: Text(
-          widget.categoryName,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () => setState(() {
-              isListMode = !isListMode;
-            }),
-            icon: Icon(
-              isListMode ? Icons.description_outlined : Icons.list,
+        create: (context) => CardsBloc(
+          DependenciesScope.repositoriesOf(context).cardsRepository,
+        )..add(FetchCards(widget.categoryId)),
+        child: Scaffold(
+          //TODO FAB for list state
+          appBar: AppBar(
+            title: Text(
+              widget.categoryName,
+              style: Theme.of(context).textTheme.titleSmall,
             ),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                onPressed: () => setState(() {
+                  isListMode = !isListMode;
+                }),
+                icon: Icon(
+                  isListMode ? Icons.description_outlined : Icons.list,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: BlocBuilder<CardsBloc, CardsState>(
-        builder: (context, state) => switch (state) {
-          CardsIdle() => const Center(
-              child: CircularProgressIndicator(),
-            ),
-          CardsLoading() => const Center(
-              child: CircularProgressIndicator(),
-            ),
-          CardsFetched() => Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: AnimatedCrossFade(
-                    layoutBuilder: (
-                      Widget topChild,
-                      Key topChildKey,
-                      Widget bottomChild,
-                      Key bottomChildKey,
-                    ) =>
-                        Stack(
-                      clipBehavior: Clip.none,
-                      children: <Widget>[
-                        Positioned(
-                          key: bottomChildKey,
-                          left: 0.0,
-                          top: 0.0,
-                          right: 0.0,
-                          bottom: 0.0,
-                          child: bottomChild,
-                        ),
-                        Positioned(
-                          key: topChildKey,
-                          child: topChild,
-                        ),
-                      ],
-                    ),
-                    duration: const Duration(milliseconds: 300),
-                    firstChild: CustomScrollView(
-                      shrinkWrap: true,
-                      slivers: <Widget>[
-                        /// Top padding
-                        const SliverPadding(
-                          padding: EdgeInsets.only(top: 16),
-                        ),
-                        // Catalog root categories
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) => CardListItemWidget(
-                              card: state.cards[index],
+          body: BlocBuilder<CardsBloc, CardsState>(
+            builder: (context, state) => switch (state) {
+              CardsIdle() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              CardsLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              CardsFetched() => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: AnimatedCrossFade(
+                        layoutBuilder: (
+                          Widget topChild,
+                          Key topChildKey,
+                          Widget bottomChild,
+                          Key bottomChildKey,
+                        ) =>
+                            Stack(
+                          clipBehavior: Clip.none,
+                          children: <Widget>[
+                            Positioned(
+                              key: bottomChildKey,
+                              left: 0.0,
+                              top: 0.0,
+                              right: 0.0,
+                              bottom: 0.0,
+                              child: bottomChild,
                             ),
-                            childCount: state.cards.length,
-                          ),
-                        ),
-
-                        /// Bottom padding
-                        const SliverPadding(
-                          padding: EdgeInsets.only(bottom: 16),
-                        ),
-                      ],
-                    ),
-                    secondChild: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CarouselSlider.builder(
-                          options: CarouselOptions(
-                            height: 400,
-                            enableInfiniteScroll:
-                                state.cards.length >= 4 || false,
-                            enlargeCenterPage: true,
-                            viewportFraction: 0.5,
-                            pauseAutoPlayInFiniteScroll: true,
-                          ),
-                          itemCount: state.cards.length,
-                          itemBuilder: (
-                            BuildContext context,
-                            int itemIndex,
-                            int pageViewIndex,
-                          ) =>
-                              CardItem(card: state.cards[itemIndex]),
-                        ),
-                        FilledButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                              Theme.of(context).colorScheme.secondary,
+                            Positioned(
+                              key: topChildKey,
+                              child: topChild,
                             ),
-                          ),
-                          onPressed: () => _showDialog().then((value) {
-                            if (value != null) {
-                              context.read<CardsBloc>().add(
-                                    AddCards(
-                                      CardEntity(
-                                        categoryId: widget.categoryId,
-                                        key: value[0],
-                                        value: value[1],
-                                      ),
-                                    ),
-                                  );
-                            }
-                          }),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.add),
-                              const SizedBox(
-                                width: 15,
+                          ],
+                        ),
+                        duration: const Duration(milliseconds: 300),
+                        firstChild: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: CustomScrollView(
+                            slivers: <Widget>[
+                              /// Top padding
+                              const SliverPadding(
+                                padding: EdgeInsets.only(top: 16),
                               ),
-                              Text(
-                                Localization.of(context).add_new_card,
-                                textAlign: TextAlign.start,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary,
-                                    ),
+                              // Catalog root categories
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) => CardListItemWidget(
+                                    card: state.cards[index],
+                                  ),
+                                  childCount: state.cards.length,
+                                ),
+                              ),
+
+                              /// Bottom padding
+                              const SliverPadding(
+                                padding: EdgeInsets.only(bottom: 16),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                        secondChild: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CarouselSlider.builder(
+                              options: CarouselOptions(
+                                height: 400,
+                                enableInfiniteScroll:
+                                    state.cards.length >= 4 || false,
+                                enlargeCenterPage: true,
+                                viewportFraction: 0.5,
+                                pauseAutoPlayInFiniteScroll: true,
+                              ),
+                              itemCount: state.cards.length,
+                              itemBuilder: (
+                                BuildContext context,
+                                int itemIndex,
+                                int pageViewIndex,
+                              ) =>
+                                  CardItem(card: state.cards[itemIndex]),
+                            ),
+                            FilledButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                  Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
+                              onPressed: () => _showDialog().then((value) {
+                                if (value != null) {
+                                  context.read<CardsBloc>().add(
+                                        AddCards(
+                                          CardEntity(
+                                            categoryId: widget.categoryId,
+                                            key: value[0],
+                                            value: value[1],
+                                          ),
+                                        ),
+                                      );
+                                }
+                              }),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.add),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  Text(
+                                    Localization.of(context).add_new_card,
+                                    textAlign: TextAlign.start,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        crossFadeState: isListMode
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                      ),
                     ),
-                    crossFadeState: isListMode
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          CardsFailure() => ErrorState(
-              errorText: state.error,
-              onTryAgain: () => context
-                  .read<CardsBloc>()
-                  .add(FetchCards(widget.categoryId)),
-            )
-        },
-      ),
-    ),
-  );
+              CardsFailure() => ErrorState(
+                  errorText: state.error,
+                  onTryAgain: () => context
+                      .read<CardsBloc>()
+                      .add(FetchCards(widget.categoryId)),
+                )
+            },
+          ),
+        ),
+      );
 
   Future<List<String>?> _showDialog() async => showGeneralDialog<List<String>>(
         context: context,

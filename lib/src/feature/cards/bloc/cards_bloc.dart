@@ -26,7 +26,7 @@ class CardsFailure implements CardsState {
   CardsFailure(this.error);
 }
 
-///Events for logic with categories
+///Events for logic with cards
 sealed class CardsEvent {}
 
 class FetchCards implements CardsEvent {

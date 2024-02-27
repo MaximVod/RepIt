@@ -4,7 +4,7 @@ import 'package:repit/src/core/components/database/src/tables/category.dart';
 
 part 'categories_date_source.g.dart';
 
-/// Repository interface for cards categories date source
+/// Interface for cards categories data source
 abstract interface class CategoriesDataSource {
   /// Get all categories
   Future<List<Category>> getAllCategories();
