@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:repit/src/core/localization/localization.dart';
 import 'package:repit/src/feature/settings/widget/settings_scope.dart';
 
-
 /// List of available languages
 const List<String> languageList = <String>['English', 'Русский'];
 
-
 ///Tab for settings
 class SettingsTab extends StatelessWidget {
-
-// Icons states for theme switcher
+  /// Icons states for theme switcher
   final MaterialStateProperty<Icon?> themeIcon =
       MaterialStateProperty.resolveWith<Icon?>(
     (Set<MaterialState> states) {

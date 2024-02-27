@@ -1,5 +1,6 @@
 import 'package:repit/src/feature/cards/data/cards_repository.dart';
 import 'package:repit/src/feature/categories/data/categories_repository.dart';
+import 'package:repit/src/feature/favorites/data/favorites_repository.dart';
 import 'package:repit/src/feature/settings/bloc/settings_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,6 +29,7 @@ base class Repositories {
   const Repositories({
     required this.categoriesRepository,
     required this.cardsRepository,
+    required this.favoritesRepository,
   });
 
   /// [CategoriesRepository] instance
@@ -35,6 +37,9 @@ base class Repositories {
 
   /// [CardsRepository] instance
   final CardsRepository cardsRepository;
+
+  /// [FavoritesRepository] instance
+  final FavoritesRepository favoritesRepository;
 }
 
 /// {@template initialization_result}
