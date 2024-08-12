@@ -58,7 +58,7 @@ dependencies:
   octopus: ^0.0.8
 
   # UI
-  carousel_slider: ^4.2.1
+  carousel_slider: ^5.0.0
   
 dev_dependencies:
   # Testing
